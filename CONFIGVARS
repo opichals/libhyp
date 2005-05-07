@@ -1,0 +1,33 @@
+# handle cross compilation
+
+NATIVE_CC = gcc
+
+ifeq ($(M68K_ATARI_MINT_CROSS),y)
+
+CROSSPREFIX = m68k-atari-mint
+
+CC     = $(CROSSPREFIX)-gcc
+AS     = $(CROSSPREFIX)-as
+LD     = $(CROSSPREFIX)-ld
+AR     = $(CROSSPREFIX)-ar
+RANLIB = $(CROSSPREFIX)-ranlib
+STRIP  = $(CROSSPREFIX)-strip
+
+else
+
+CC     = gcc
+AS     = as
+LD     = ld
+AR     = ar
+RANLIB = ranlib
+STRIP  = strip
+
+endif
+
+
+# general compilation and optimalization options (CFLAGS)
+OPTS   = \
+	-mshort \
+	-O2 -fomit-frame-pointer
+
+
