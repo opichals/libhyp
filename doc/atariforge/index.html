@@ -1,0 +1,54 @@
+<!DOCTYPE HTML SYSTEM "html.dtd">
+<HTML>
+<HEAD>
+<TITLE>HypView.cgi Home - Jay Software's</TITLE>
+</HEAD>
+<BODY BGCOLOR="#cccccc" TEXT="#000000" LINK="#555555" vlink="#999999" alink="#ff0000">
+<H1>HYP View CGI Service</H1>
+<em>Want to browse .HYP files in any HTML browser?</em>
+<p>
+Type in the URL of a .HYP file:
+<br>
+<form action=hypview.cgi>
+<input type="text" name="url" size="120" tabindex=1><br>
+<br>
+<em>Show images</em><br>
+<input type="radio" name="hideimages" value="0" checked="checked"> yes<br>
+<input type="radio" name="hideimages" value="1"> no<br>
+Show menu<br>
+<input type="radio" name="hidemenu" value="0" checked="checked"> yes<br>
+<input type="radio" name="hidemenu" value="1"> no<br>
+<br>
+Output encoding:<br>
+<input type="radio" name="dstenc" value="" checked="checked"> default<br>
+<input type="radio" name="dstenc" value="utf8"> UTF8<br>
+<input type="radio" name="dstenc" value="cp1250"> Windows 1250<br>
+<br>
+<input type="submit" value="Browse"><br>
+</form>
+<br>
+Navigation (only when menu is on using HTML 4.x accesskey attribute):
+<dl>
+<dt><em>ALT+P</em>
+<dd>Previous node
+<dt><em>ALT+N</em>
+<dd>Next node
+<dt><em>ALT+T</em>
+<dd>Table of contents node
+<dt><em>ALT+Z</em>
+<dd>Index node
+<dt><em>ALT+O</em>
+<dd>Open another .HYP file
+</dl>
+<br>
+<em>Sorry, no support for @line, @box and other commands like e.g. external links etc. yet</em><br>
+<em>It all will go open-source soon</em><br>
+<p>
+<p>
+<center>
+<hr width="80%">
+&nbsp;<EM>&copy;&nbsp;2005 by JAY Software</EM>
+</center>
+
+</BODY>
+</HTML>
