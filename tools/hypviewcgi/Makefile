@@ -15,9 +15,7 @@ TARGET = dehyp
 
 all: $(TARGET)
 
-#STDLIB_CFLAGS = $(M68K_ATARI_MINT_CFLAGS)
-
-CFLAGS  = -I$(top_srcdir)/include $(STDLIB_CFLAGS)
+CFLAGS = -I$(top_srcdir)/include $(CROSS_CFLAGS)
 
 CSRC = \
 	emitpng.c \
@@ -29,7 +27,7 @@ OBJECTS = $(CSRC:.c=.o)
 dehyp.o: $(top_srcdir)/include/libhyp.h
 
 $(TARGET): $(OBJECTS)
-	$(CC) -o $(TARGET) $(OBJECTS) -L$(libhyp_dir) -lhyp -lpng
+	$(CC) -v -o $(TARGET) $(OBJECTS) -L$(libhyp_dir) -lhyp -lpng $(CROSS_LDFLAGS)
 
 strip:
 	$(STRIP) --strip-all $(TARGET)

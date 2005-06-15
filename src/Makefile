@@ -20,9 +20,7 @@ INCDIR = $(top_srcdir)/include
 
 all: $(TARGET)
 
-#STDLIB_CFLAGS = $(M68K_ATARI_MINT_CFLAGS)
-
-CFLAGS += -I$(INCDIR) $(STDLIB_CFLAGS)
+CFLAGS = -I$(INCDIR) $(CROSS_CFLAGS)
 
 CSRC = \
 	decodlh5.c \
