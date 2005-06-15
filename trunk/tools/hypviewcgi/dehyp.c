@@ -20,8 +20,8 @@
  *  
  * CVS info:
  *   $Author: standa $
- *   $Date: 2005-06-03 21:12:14 $
- *   $Revision: 1.1.1.1 $
+ *   $Date: 2005-06-15 23:32:57 $
+ *   $Revision: 1.2 $
  */
 
 #include <stdio.h>
@@ -56,7 +56,7 @@ int emit_image( HYP *hyp, int index )
 void emit_quoted( char *s )
 {
 	char *t;
-	while( t = strpbrk( s, "<>&\'\"" ) ) {
+	while( t = (char*)strpbrk( s, "<>&\'\"" ) ) {
 		char c = *t;
 		*t = '\0';
 		printf( "%s", s );
