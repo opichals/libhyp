@@ -20,12 +20,18 @@
  *  
  * CVS info:
  *   $Author: standa $
- *   $Date: 2005-06-03 21:06:57 $
- *   $Revision: 1.1.1.1 $
+ *   $Date: 2005-06-15 23:26:17 $
+ *   $Revision: 1.2 $
  */
 
 #ifndef __LIBHYP__
 #define __LIBHYP__
+
+
+/* Version information */
+#define __LIBHYP_VERSION_MAJOR__     0
+#define __LIBHYP_VERSION_MINOR__     5
+#define __LIBHYP_VERSION_REVISION__  0
 
 
 /*** .STG file line environment ***/
