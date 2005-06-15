@@ -2,7 +2,7 @@
 
 NATIVE_CC = gcc
 
-ifeq ($(M68K_ATARI_MINT_CROSS),y)
+ifeq ($(M68K_ATARI_MINT_CROSS),yes)
 
 CROSSPREFIX = m68k-atari-mint
 
@@ -12,6 +12,9 @@ LD     = $(CROSSPREFIX)-ld
 AR     = $(CROSSPREFIX)-ar
 RANLIB = $(CROSSPREFIX)-ranlib
 STRIP  = $(CROSSPREFIX)-strip
+
+CFLAGS = $(M68K_ATARI_MINT_CFLAGS)
+LDFLAGS= $(M68K_ATARI_MINT_LDFLAGS)
 
 else
 
