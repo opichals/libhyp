@@ -20,8 +20,8 @@
  *  
  * CVS info:
  *   $Author: standa $
- *   $Date: 2005-06-03 21:09:09 $
- *   $Revision: 1.1.1.1 $
+ *   $Date: 2005-06-16 01:09:30 $
+ *   $Revision: 1.2 $
  */
 
 
@@ -248,6 +248,7 @@ HYP_NODE *hyp_parse_node_data( HYP *hyp, char *buff, unsigned long len )
 				ln->item.type = HYPT_LINE;
 				ln->x_offset	= *buff++;
 				line_number = hyp_getword( buff ); buff += 2;
+				ln->y_offset = line_number;
 				ln->x_length	= *buff++ - 0x80;
 				ln->y_length	= *buff++ - 1;
 				ln->attribs	= (*buff - 1) & 3;
@@ -264,6 +265,7 @@ HYP_NODE *hyp_parse_node_data( HYP *hyp, char *buff, unsigned long len )
 				box->rbox_flag = (comm == HYP_IRBOX);
 				box->x_offset	= *buff++;
 				line_number = hyp_getword( buff ); buff += 2;
+				box->y_offset = line_number;
 				box->width	= *buff++;
 				box->height	= *buff++;
 				box->pattern	= *buff++ - 1;
@@ -319,7 +321,7 @@ HYP_NODE *hyp_parse_node_data( HYP *hyp, char *buff, unsigned long len )
 					strncpy( dest, buff, len );
 					buff += len;
 			        } else {
-					strcpy(  dest, ie->Name );
+					strcpy(  dest, ie->name );
 					len = strlen( dest);
 				}
 				dest += len;
@@ -388,7 +390,7 @@ HYP_NODE *hyp_parse_node( HYP *hyp, long index )
 	char* buffer = hyp_read_index_data( hyp, index, &len );
 	if ( buffer) {
 		HYP_NODE *node = hyp_parse_node_data( hyp, buffer, len );
-		node->name = hyp->index_table[ index ].Name;
+		node->name = hyp->index_table[ index ].name;
 		free( buffer);
 		return node;
 	}
@@ -430,14 +432,14 @@ void hyp_parse_ext_header( HYP *hyp, HYP_FHYPEHENTRY *header_ext, char *buff )
 		case HYP_EH_STGUIDEFLAGS:
 			hyp->preamble.flags	= strdup( buff );
 			break;
-		case HYP_EH_WITDH:
-			hyp->Env.Width	= (unsigned char)*buff;
+		case HYP_EH_WIDTH:
+			hyp->preamble.width	= (unsigned char)*buff;
 			break;
 	}
 }
 
 /***** Hyp_Load... Loads the .HYP file into the HYP *****/
-HYP* hyp_load( char *FileName )
+HYP* hyp_load( char *filename )
 {
 	FILE *fh;
 	HYP_FHYPEHENTRY	header_ext;
@@ -448,9 +450,9 @@ HYP* hyp_load( char *FileName )
 	if ( ! hyp )
 		return NULL;
 
-	hyp->filename = strdup(FileName);
+	hyp->filename = strdup(filename);
 
-	fh = fopen( FileName, "rb" );
+	fh = fopen( filename, "rb" );
 	if ( fh == NULL ) {
 		free(hyp);
 		return NULL;
@@ -460,8 +462,7 @@ HYP* hyp_load( char *FileName )
 	if ( ntohl(hyp->header.magic) != 0x48444f43UL /*'HDOC'*/ ) return NULL;
 
 	hyp->preamble.flags	= NULL;
-	hyp->Env.Width		= HYP_DEFAULTWIDTH;
-	hyp->Env.Effects	= 0;
+	hyp->preamble.width	= HYP_DEFAULTWIDTH;
 
 	/* fixup the values to CPU endian */
 	hyp->header.length = ntohl(hyp->header.length);
@@ -489,7 +490,7 @@ HYP* hyp_load( char *FileName )
 	fclose( fh );
 
 	/* index table scan */
-	hyp->IndexIdx = -1;
+	hyp->preamble.idx_index = -1;
 
 	for( index = 0; index < hyp->header.entry_count; index++ ) {
 		HYP_HDOC_IDXITEM *ie = &hyp->index_table[ index ];
@@ -498,21 +499,21 @@ HYP* hyp_load( char *FileName )
 		ie->type = o[1];
 		ie->offset = ntohl(*(unsigned long*)&o[2]);
 		ie->compressed_len = ntohs(*(unsigned short*)&o[6]);
-		ie->NextIdx = ntohs(*(unsigned short*)&o[8]);
-		ie->PrevIdx = ntohs(*(unsigned short*)&o[10]);
-		ie->TOCIdx = ntohs(*(unsigned short*)&o[12]);
-		ie->Name = (char*)&o[14];
+		ie->idx_next = ntohs(*(unsigned short*)&o[8]);
+		ie->idx_prev = ntohs(*(unsigned short*)&o[10]);
+		ie->idx_toc = ntohs(*(unsigned short*)&o[12]);
+		ie->name = (char*)&o[14];
 
 		/* image node has the compression difference encoded as long (e.g. atos9701.hyp 274) */
 		if ( ie->type == HYP_IDX_IMAGE ) {
-			ie->compressed_len |= (unsigned long)ie->NextIdx << 16;
+			ie->compressed_len |= (unsigned long)ie->idx_next << 16;
 		}
 
 		/* Search for the "index" named node (if any) */
-		if ( hyp->IndexIdx == -1 &&
+		if ( hyp->preamble.idx_index == -1 &&
 				ie->type == HYP_IDX_NODE &&
-				!strcmp( "Index", ie->Name ) )
-			hyp->IndexIdx = index;
+				!strcmp( "Index", ie->name ) )
+			hyp->preamble.idx_index = index;
 
 		entry_offset += o[0];
 	}

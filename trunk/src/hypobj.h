@@ -20,8 +20,8 @@
  *  
  * CVS info:
  *   $Author: standa $
- *   $Date: 2005-06-03 21:08:25 $
- *   $Revision: 1.1.1.1 $
+ *   $Date: 2005-06-16 01:09:30 $
+ *   $Revision: 1.2 $
  */
 
 
@@ -39,7 +39,7 @@
 #define HYP_EH_SUBJECT		8
 #define HYP_EH_TITLETABLE	9
 #define HYP_EH_STGUIDEFLAGS	10
-#define HYP_EH_WITDH		11
+#define HYP_EH_WIDTH		11
 
 typedef struct {
 	unsigned short	type;

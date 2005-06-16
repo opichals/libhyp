@@ -20,8 +20,8 @@
  *  
  * CVS info:
  *   $Author: standa $
- *   $Date: 2005-06-15 23:26:17 $
- *   $Revision: 1.2 $
+ *   $Date: 2005-06-16 01:09:30 $
+ *   $Revision: 1.3 $
  */
 
 #ifndef __LIBHYP__
@@ -33,14 +33,6 @@
 #define __LIBHYP_VERSION_MINOR__     5
 #define __LIBHYP_VERSION_REVISION__  0
 
-
-/*** .STG file line environment ***/
-typedef struct _STG_ENV {
-	unsigned char	TabWidth;
-	unsigned char	Width;
-	unsigned char	Effects;
-	unsigned char	Unused;
-} STG_ENV;
 
 /* .HYP file header */
 typedef struct _HYP_HDOC_HEADER {
@@ -68,10 +60,10 @@ typedef struct _HYP_HDOC_IDXITEM {
 	unsigned char	type;
 	unsigned long	offset;
 	unsigned long	compressed_len;
-	unsigned short	NextIdx;
-	unsigned short	PrevIdx;
-	unsigned short	TOCIdx;
-	char	*Name;
+	unsigned short	idx_next;
+	unsigned short	idx_prev;
+	unsigned short	idx_toc;
+	char		*name;
 } HYP_HDOC_IDXITEM;
 
 
@@ -118,6 +110,7 @@ typedef struct _HYP_LINK {
 typedef struct _HYP_LINE {
 	HYP_ITEM	item;
 	unsigned char	x_offset;
+	unsigned short	y_offset;
 	char		x_length;
 	unsigned char	y_length;
 	char		attribs;
@@ -128,6 +121,7 @@ typedef struct _HYP_BOX {
 	HYP_ITEM	item;
 	unsigned short	rbox_flag;	/* boolean */
 	unsigned char	x_offset;
+	unsigned short	y_offset;
 	unsigned char	width;
 	unsigned char	height;
 	char		pattern;
@@ -165,18 +159,18 @@ typedef struct _HYP {
 	char              *filename;
 	HYP_HDOC_HEADER   header;		/* .HYP file header */
 	HYP_HDOC_IDXITEM  *index_table;		/* Index table of .HYP */
-	STG_ENV           Env;
-	long              IndexIdx;
 
 	struct {
-		char	*help;
-		char	*deflt;
-		char	*database;
-		char	*version;
-		char	*subject;
-		char	*author;
-		char	*options;
-		char    *flags;		/* Supposed to cause the CHIPS60 encoding (each byte = 7F - original contents) */
+		char	      *help;
+		char	      *deflt;
+		char	      *database;
+		char	      *version;
+		char	      *subject;
+		char	      *author;
+		char	      *options;
+		char          *flags;		/* Supposed to cause the CHIPS60 encoding (each byte = 7F - original contents) */
+		unsigned char width;		/* HYP preamble @width value */
+		long          idx_index;	/* 'Index' named node index */
 	} preamble;
 } HYP;
 

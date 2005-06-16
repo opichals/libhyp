@@ -27,7 +27,7 @@ OBJECTS = $(CSRC:.c=.o)
 dehyp.o: $(top_srcdir)/include/libhyp.h
 
 $(TARGET): $(OBJECTS)
-	$(CC) -v -o $(TARGET) $(OBJECTS) -L$(libhyp_dir) -lhyp -lpng $(CROSS_LDFLAGS)
+	$(CC) -o $(TARGET) $(OBJECTS) -L$(libhyp_dir) -lhyp -lpng $(CROSS_LDFLAGS)
 
 strip:
 	$(STRIP) --strip-all $(TARGET)

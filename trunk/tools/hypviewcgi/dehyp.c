@@ -20,8 +20,8 @@
  *  
  * CVS info:
  *   $Author: standa $
- *   $Date: 2005-06-15 23:32:57 $
- *   $Revision: 1.2 $
+ *   $Date: 2005-06-16 01:09:30 $
+ *   $Revision: 1.3 $
  */
 
 #include <stdio.h>
@@ -85,7 +85,7 @@ int emit_node( HYP *hyp, int index )
 		emit_quoted( node->title ? node->title : node->name );
 		printf( "\"-->\n");
 
-		printf( "<!--refs \"prev=%d&next=%d&toc=%d&idx=%d\"-->\n", ie->PrevIdx, ie->NextIdx, ie->TOCIdx, hyp->IndexIdx);
+		printf( "<!--refs \"prev=%d&next=%d&toc=%d&idx=%d\"-->\n", ie->idx_prev, ie->idx_next, ie->idx_toc, hyp->preamble.idx_index);
 
 #if 0
 		if ( 1 ) { printf( "<!--pre-->\n"); first=0; }
