@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-06-03 21:15:02 $
-#   $Revision: 1.1.1.1 $
+#   $Date: 2005-06-16 01:25:32 $
+#   $Revision: 1.2 $
 #
 
 # parse the query string
@@ -192,7 +192,7 @@ if ( $refs ne "" ) {
 
 # HTML links (it is worth it in HTML browser ;)
 $Lines =~ s|(\s)((http\|ftp):/\S+)([;:,\.\]\)\}\"\']*\s)|$1<a href="$2">$2</a>$4|gm;
-$Lines =~ s|(\s)(\S+\@\S+?)([;:,\.\]\)\}\"\']*\s)|$1<a href="mailto:$2">$2</a>$3|gm;
+$Lines =~ s|(\s)([a-z]+[a-z0-9.\-_]+\@[a-z0-9.\-_]*[a-z])([;:,\.\]\)\}\"\']*\s)|$1<a href="mailto:$2">$2</a>$3|gim;
 
 # effects
 $Lines =~ s"<!--ef 0x([0-9a-fA-F][0-9a-fA-F])-->"&effects(hex($1))"gem;
@@ -201,8 +201,7 @@ $Lines =~ s|<!--pre-->|$refs<pre>\n$images\n</pre><div style="position:absolute;
 $Lines =~ s'<!--/pre-->'</pre></div>'m;
 
 # make <a> links valid to our location
-$Lines =~ s|<!--a href=\"(.*?)\"-->|<a href=\"$0\?url=$form{url}$addtourl&$1\">|gm;
-$Lines =~ s|<!--/a-->|</a>|gm;
+$Lines =~ s|<!--a href=\"(.*?)\"-->(.*?)<!--/a-->|<a href=\"$0\?url=$form{url}$addtourl&$1\">$2</a>|gm;
 
 # move everything down (if menu is on)
 $Lines =~ s|top:0em;|top:34px;|gm  if ( $refs ne "" );
