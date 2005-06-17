@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-06-03 21:15:30 $
-#   $Revision: 1.1.1.1 $
+#   $Date: 2005-06-17 03:52:29 $
+#   $Revision: 1.2 $
 #
 
 sub wget_fetch {
@@ -44,7 +44,8 @@ sub wget_fetch {
 
 		`wget -q -O $FILE -c $url`;
 	}
-	$file = $FILE;
+
+	$FILE;
 }
 
 1
