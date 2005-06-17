@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-06-16 01:25:32 $
-#   $Revision: 1.2 $
+#   $Date: 2005-06-17 03:52:51 $
+#   $Revision: 1.3 $
 #
 
 # parse the query string
@@ -85,22 +85,6 @@ sub effects {
 	$oldeff = $e;
 	
 	$eff."<!--ef ".$e."-->";
-}
-
-sub imageDiv {
-	my ($args) = @_;
-	my (%args) = map { split('=') } split('&', $args);
-	if ( $args{xoffset} == 0 ) {
-	$_ = "<div align=\"center\" style=\"position:absolute; top:".($args{yoffset}+$yoffset)."em; width:75ex; z-index:1;\"><img src=\"hypviewimg.cgi?url=$form{url}\&$args\"></div>";
-	} else {
-	$_ = "<div style=\"position:absolute; top:".($args{yoffset}+$yoffset)."em; left:". ($args{xoffset}) ."ex; z-index:1;\"><img src=\"hypviewimg.cgi?url=$form{url}\&$args\"></div>";
-	}
-	if ( $args{type} eq "limage" ) {
-		my $charheight = ($args{height}+15)/16;
-		$yoffset += $charheight;
-		push @limg_offsets, "$args{yoffset},$charheight"; 
-	}
-	$_;
 }
 
 sub insertImages {
