@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-06-17 03:52:51 $
-#   $Revision: 1.3 $
+#   $Date: 2005-07-12 04:53:08 $
+#   $Revision: 1.4 $
 #
 
 # parse the query string
@@ -30,6 +30,7 @@
 
 print "Content-Type: text/html\n\n";
 
+require "./config.pl";
 require "./hypcache.pl";
 $form{file} = &wget_fetch( $form{url} );
 
@@ -47,6 +48,9 @@ if ( $#lines == -1 ) {
 	print "Corrupted .HYP file\n";
 	die(0);
 }
+
+# get only the filename
+($this) = ($0 =~ m!.*/([^\/]+)!);
 
 $oldeff = 0;
 sub effects {
@@ -156,22 +160,22 @@ $refs = $1 if ( $Lines =~ m|<!--refs \"(.*?)\"-->| );
 if ( $refs ne "" ) {
 	%refs = map { split('=') } split('&', $refs);
 	if ( $form{hidemenu} ne "1" ) {
-		$refs =  '<div style="position:absolute; top:0; z-index:$z;"><a href="javascript: history.go(-1)"><img src="image/iback.png" border=0></a>';
-		$refs .= "\n<a href=\"$0\?url=$form{url}$addtourl&index=$refs{prev}\" accesskey=\"p\" rel=\"prev\"><img src=\"image/iprev.png\" border=0></a>" if ( $refs{prev} != -1 );
-		$refs .= "\n<a href=\"$0\?url=$form{url}$addtourl&index=$refs{toc}\" accesskey=\"t\" rel=\"contents\"><img src=\"image/itoc.png\" border=0></a>" if ( $refs{toc} != -1 );
-		$refs .= "\n<a href=\"$0\?url=$form{url}$addtourl&index=$refs{next}\" accesskey=\"n\" rel=\"next\"><img src=\"image/inext.png\" border=0></a>\n" if ( $refs{next} != -1 );
-		$refs .= "\n<a href=\"$0\?url=$form{url}$addtourl&index=$refs{idx}\" accesskey=\"z\" rel=\"index\"><img src=\"image/iindex.png\" border=0></a>\n" if ( $refs{idx} != -1 );
-		$refs .= "\n<span>&nbsp;&nbsp;&nbsp;</span><a href=\"../libhyp\" accesskey=\"o\"><img src=\"image/iload.png\" border=0></a>\n";
+		$refs =  '<div style="position:absolute; top:0; z-index:$z;"><a href="javascript: history.go(-1)">'."<img src=\"$config{href_image}/iback.png\" border=0></a>";
+		$refs .= "\n<a href=\"$this\?url=$form{url}$addtourl&index=$refs{prev}\" accesskey=\"p\" rel=\"prev\"><img src=\"$config{href_image}/iprev.png\" border=0></a>" if ( $refs{prev} != -1 );
+		$refs .= "\n<a href=\"$this\?url=$form{url}$addtourl&index=$refs{toc}\" accesskey=\"t\" rel=\"contents\"><img src=\"$config{href_image}/itoc.png\" border=0></a>" if ( $refs{toc} != -1 );
+		$refs .= "\n<a href=\"$this\?url=$form{url}$addtourl&index=$refs{next}\" accesskey=\"n\" rel=\"next\"><img src=\"$config{href_image}/inext.png\" border=0></a>\n" if ( $refs{next} != -1 );
+		$refs .= "\n<a href=\"$this\?url=$form{url}$addtourl&index=$refs{idx}\" accesskey=\"z\" rel=\"index\"><img src=\"$config{href_image}/iindex.png\" border=0></a>\n" if ( $refs{idx} != -1 );
+		$refs .= "\n<span>&nbsp;&nbsp;&nbsp;</span><a href=\"$config{href_openhyp}\" accesskey=\"o\"><img src=\"$config{href_image}/iload.png\" border=0></a>\n";
 		$refs .= "</div>";
 	} else {
 		$refs = "";
 		$addtourl .= "&hidemenu=$form{hidemenu}";
 	}
 
-	$title .= "<link href=\"$0\?url=$form{url}$addtourl&index=$refs{prev}\" accesskey=\"p\" rel=\"prev\">\n" if ( $refs{prev} != -1 );
-	$title .= "<link href=\"$0\?url=$form{url}$addtourl&index=$refs{toc}\" accesskey=\"t\" rel=\"contents\">\n" if ( $refs{toc} != -1 );
-	$title .= "<link href=\"$0\?url=$form{url}$addtourl&index=$refs{next}\" accesskey=\"n\" rel=\"next\">\n" if ( $refs{next} != -1 );
-	$title .= "<link href=\"$0\?url=$form{url}$addtourl&index=$refs{idx}\" accesskey=\"z\" rel=\"index\">\n" if ( $refs{idx} != -1 );
+	$title .= "<link href=\"$this\?url=$form{url}$addtourl&index=$refs{prev}\" accesskey=\"p\" rel=\"prev\">\n" if ( $refs{prev} != -1 );
+	$title .= "<link href=\"$this\?url=$form{url}$addtourl&index=$refs{toc}\" accesskey=\"t\" rel=\"contents\">\n" if ( $refs{toc} != -1 );
+	$title .= "<link href=\"$this\?url=$form{url}$addtourl&index=$refs{next}\" accesskey=\"n\" rel=\"next\">\n" if ( $refs{next} != -1 );
+	$title .= "<link href=\"$this\?url=$form{url}$addtourl&index=$refs{idx}\" accesskey=\"z\" rel=\"index\">\n" if ( $refs{idx} != -1 );
 }
 
 # HTML links (it is worth it in HTML browser ;)
@@ -185,7 +189,7 @@ $Lines =~ s|<!--pre-->|$refs<pre>\n$images\n</pre><div style="position:absolute;
 $Lines =~ s'<!--/pre-->'</pre></div>'m;
 
 # make <a> links valid to our location
-$Lines =~ s|<!--a href=\"(.*?)\"-->(.*?)<!--/a-->|<a href=\"$0\?url=$form{url}$addtourl&$1\">$2</a>|gm;
+$Lines =~ s|<!--a href=\"(.*?)\"-->(.*?)<!--/a-->|<a href=\"$this\?url=$form{url}$addtourl&$1\">$2</a>|gm;
 
 # move everything down (if menu is on)
 $Lines =~ s|top:0em;|top:34px;|gm  if ( $refs ne "" );
