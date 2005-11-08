@@ -9,28 +9,27 @@ srcdir     = .
 
 include $(top_srcdir)/CONFIGVARS
 
-libhyp_dir = $(top_srcdir)/lib
-
-TARGET = dehyp
+TARGET = dehyp grephyp
 
 all: $(TARGET)
 
 CFLAGS = -I$(top_srcdir)/include $(CROSS_CFLAGS)
 
-CSRC = \
-	emitpng.c \
-	dehyp.c
-
 # engine binary objects
-OBJECTS = $(CSRC:.c=.o)
+DEHYP_OBJS = emitpng.o dehyp.o
+GREPHYP_OBJS = grephyp.o
 
 dehyp.o: $(top_srcdir)/include/libhyp.h
+grephyp.o: $(top_srcdir)/include/libhyp.h
 
-$(TARGET): $(OBJECTS) $(libhyp_dir)/libhyp.a
-	$(CC) -o $(TARGET) $(OBJECTS) -L$(libhyp_dir) -lhyp -lpng $(CROSS_LDFLAGS)
+dehyp: $(DEHYP_OBJS) $(libhyp_dir)/libhyp.a
+	$(CC) -o $@ $(DEHYP_OBJS) -L$(libhyp_dir) -lhyp -L$(libpng_dir) -lpng $(CROSS_LDFLAGS)
+
+grephyp: $(GREPHYP_OBJS) $(libhyp_dir)/libhyp.a
+	$(CC) -o $@ $(GREPHYP_OBJS) -L$(libhyp_dir) -lhyp $(CROSS_LDFLAGS)
 
 strip:
 	$(STRIP) --strip-all $(TARGET)
 
 clean: 
-	rm -rf $(OBJECTS)
+	rm -rf $(DEHYP_OBJS) $(GREPHYP_OBJS)
