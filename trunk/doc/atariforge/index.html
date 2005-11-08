@@ -7,7 +7,8 @@
 <H1>HYP View CGI Service</H1>
 <em>Want to browse .HYP files in any HTML browser?</em>
 <p>
-Type in the URL of a .HYP file:
+Type in URL of a .HYP file (it must be remotely accessible from that URL<br>
+for example <a href="hypview.cgi?url=http://phoenix.inf.upol.cz/~opichals/jay/docs/ataripf.hyp">http://phoenix.inf.upol.cz/~opichals/jay/docs/ataripf.hyp</a>):
 <br>
 <form action=hypview.cgi>
 <input type="text" name="url" size="120" tabindex=1><br>
@@ -29,6 +30,8 @@ Output encoding:<br>
 <br>
 Navigation (only when menu is on using HTML 4.x accesskey attribute):
 <dl>
+<dt><em>ALT+S</em>
+<dd>Search (case sensitive)
 <dt><em>ALT+P</em>
 <dd>Previous node
 <dt><em>ALT+N</em>
