@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-06-17 03:52:29 $
-#   $Revision: 1.2 $
+#   $Date: 2005-11-08 00:43:24 $
+#   $Revision: 1.3 $
 #
 
 sub wget_fetch {
@@ -31,6 +31,7 @@ sub wget_fetch {
 
 	my ( $TMP ) = "cache";
 
+	$url =~ s/\+/ /g;  # urldecode
 	$url =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex($1))/ge;  # urldecode
 
 	# get the URL and strip slashes
