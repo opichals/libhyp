@@ -2,7 +2,7 @@
 
 NATIVE_CC = gcc
 
-ifeq ($(M68K_ATARI_MINT_CROSS),yes)
+ifeq ($(M68K_ATARI_MINT_CROSS),y)
 
 CROSSPREFIX = m68k-atari-mint
 
@@ -34,3 +34,6 @@ OPTS   = \
 	-O2 -fomit-frame-pointer
 
 
+# library folders for tools
+libhyp_dir = $(top_srcdir)/lib
+libpng_dir = .
