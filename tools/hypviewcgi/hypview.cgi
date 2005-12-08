@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-11-08 00:50:13 $
-#   $Revision: 1.5 $
+#   $Date: 2005-12-08 15:36:40 $
+#   $Revision: 1.6 $
 #
 
 # parse the query string
@@ -107,24 +107,24 @@ sub insertImages {
 			$images .= "\n<div align=\"center\" style=\"position:absolute; top:0em; width:78ex; z-index:$z;\">"
 		} else {
 			# xoffset positioned image
-			$images .= "\n<div style=\"position:absolute; top:0em; left:". ($args{xoffset}) ."ex; z-index:$z;\">";
+			$images .= "\n<div style=\"position:absolute; top:0em; left:". int($args{xoffset}*1.4) ."ex; z-index:$z;\">";
 		}
 
 		# yoffset number of newlines
 		my $count = $args{yoffset} + $offset;
-		while ( $count-- > 0 ) { $images .= "\n"; }
+		while ( $count-- >= 0 ) { $images .= "<br>"; }
 
 		# @limage additional newlines
 		if ( $args{type} eq "limage" ) {
 			my $count = ($args{height}+15)/16;
 			$offset += $count + 1;
 			my $limgnl = "";
-			while ( $count-- > 0 ) { $limgnl .= "\n"; }
+			while ( $count-- >= 0 ) { $limgnl .= "\n"; }
 			splice @lines,$begidx+$args{yoffset},0,$limgnl; $begidx += 1;
 		}
 		#print "$imgargs<br>\n";
 
-		$images .= "<img src=\"hypviewimg.cgi?url=$form{url}\&$imgargs\"></div>";
+		$images .= "<img src=\"hypviewimg.cgi?url=$form{url}\&index=$args{index}\"></div>";
 
 		$z++;
 	}
