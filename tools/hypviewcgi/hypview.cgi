@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-12-08 20:15:59 $
-#   $Revision: 1.7 $
+#   $Date: 2005-12-08 21:07:13 $
+#   $Revision: 1.8 $
 #
 
 # parse the query string
@@ -208,12 +208,13 @@ $Lines =~ s|top:0em;|top:34px;|gm  if ( $refs ne "" );
 # strip the remaining unhandled tags
 $Lines =~ s|<!--.*?-->||gm;
 
-print '<HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html';
+print '<html><head><meta http-equiv="Content-Type" content="text/html';
 if ( $form{dstenc} ) {
 	print '; charset='.$form{dstenc};
 }
-print "\">$title</HEAD>";
-print "<BODY><div style=\"width:75ex;\">\n";
+print "\">$title\n</head>";
+print "<body><div style=\"width:75ex;\">\n";
 print $Lines;
-print "</div></BODY></HTML>";
+# map { print "$_ -> $ENV{$_}\n"; } keys %ENV;
+print "</div></body></html>";
 
