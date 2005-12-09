@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-12-08 21:07:13 $
-#   $Revision: 1.8 $
+#   $Date: 2005-12-09 23:43:18 $
+#   $Revision: 1.9 $
 #
 
 # parse the query string
@@ -143,7 +143,7 @@ foreach my $l ( @lines ) {
 	if ( $l =~ m"<!--pre-->" ) { last; }
 
 	# strip image tags and put them into limg_args
-	if ( $l =~ s"<!--img src=\"([^\"]+)\"-->""g ) {
+	if ( $l =~ s"<!--img\s+\"([^\"]+)\"-->""g ) {
 		push @limg_args, $1;
 	}
 	$begidx++;
