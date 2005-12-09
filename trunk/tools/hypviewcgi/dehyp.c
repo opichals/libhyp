@@ -20,8 +20,8 @@
  *  
  * CVS info:
  *   $Author: standa $
- *   $Date: 2005-06-16 01:09:30 $
- *   $Revision: 1.3 $
+ *   $Date: 2005-12-09 23:43:18 $
+ *   $Revision: 1.4 $
  */
 
 #include <stdio.h>
@@ -109,16 +109,28 @@ int emit_node( HYP *hyp, int index )
 					printf( "<!--ef 0x%02x-->", (int)((HYP_EFFECTS*)item)->effects );
 					break;
 				case HYPT_LINE:
-					printf( "<!--line xoffset=\"%d\"-->\n", (int)((HYP_LINE*)item)->x_offset );
+					printf( "<!--line \"xoffset=%d&yoffset=%d&xlength=%d&ylength=%d&attribs=%d&style=%d\"-->\n",
+							(int)((HYP_LINE*)item)->x_offset,
+							(int)((HYP_LINE*)item)->y_offset,
+							(int)((HYP_LINE*)item)->x_length,
+							(int)((HYP_LINE*)item)->y_length,
+							(int)((HYP_LINE*)item)->attribs,
+							(int)((HYP_LINE*)item)->style);
 					break;
 				case HYPT_BOX:
-					printf( "<!--box xoffset=\"%d\"-->\n", (int)((HYP_BOX*)item)->x_offset );
+					printf( "<!--box \"rbox=%d&xoffset=%d&yoffset=%d&width=%d&height=%d&pattern=%d\"-->\n",
+							(int)((HYP_BOX*)item)->rbox_flag?1:0,
+							(int)((HYP_BOX*)item)->x_offset,
+							(int)((HYP_BOX*)item)->y_offset,
+							(int)((HYP_BOX*)item)->width,
+							(int)((HYP_BOX*)item)->height,
+							(int)((HYP_BOX*)item)->pattern);
 					break;
 				case HYPT_IMAGE:
 					{
 						HYP_IMAGE_DATA *img = hyp_parse_image_data( hyp, ((HYP_IMAGE*)item)->index );
 						if ( img ) {
-							printf( "<!--img src=\"index=%d&xoffset=%d&yoffset=%d&type=%simage&width=%d&height=%d\"-->\n",
+							printf( "<!--img \"index=%d&xoffset=%d&yoffset=%d&type=%simage&width=%d&height=%d\"-->\n",
 									(int)((HYP_IMAGE*)item)->index,
 									(int)((HYP_IMAGE*)item)->x_offset,
 									(int)((HYP_IMAGE*)item)->y_offset,
