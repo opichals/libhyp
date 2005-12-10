@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-12-10 02:13:19 $
-#   $Revision: 1.1 $
+#   $Date: 2005-12-10 02:32:45 $
+#   $Revision: 1.2 $
 #
 
 # parse the query string
@@ -169,11 +169,11 @@ sub constructGraphics {
 			$g  = "  <svg:rect x=\"".($gr{xoffset}*$form{ex})."\" y=\"".($gr{yoffset}*$form{em})."\"";
 			$g .= " width=\"".($gr{width}*$form{ex})."\" height=\"".($gr{height}*$form{em})."\" style=\"";
 			if ( $gr{pattern} == 8 ) {
-				$g .= "fill:black;fill-opacity:1;stroke:black;\"";
+				$g .= "fill:black;fill-opacity:1;\"";
 			} elsif ( $gr{pattern} != 0 ) {
-				$g .= "fill:black;fill-opacity:".($gr{pattern}*0.1).";stroke:black;\"";
+				$g .= "fill:black;fill-opacity:".($gr{pattern}*0.1).";\"";
 			} else {
-				$g .= "fill:none;stroke:black;\"";
+				$g .= "fill:none;\"";
 			}
 			if ( $gr{rbox} != 0 ) {
 				$g .= " rx=\"".(($gr{width}+$gr{height})/2)."\"";
@@ -181,8 +181,7 @@ sub constructGraphics {
 			push @graphs, "$g/>\n";
 		} elsif ( $gr{cmd} eq "line" ) {
 			$g  = "  <svg:line x1=\"".($gr{xoffset}*$form{ex})."\" y1=\"".($gr{yoffset}*$form{em});
-			$g .= "\" x2=\"".($gr{xoffset}+$gr{xlength})*$form{ex}."\" y2=\"".($gr{yoffset}+$gr{ylength})*$form{em};
-			$g .= "\" stroke=\"black\"";
+			$g .= "\" x2=\"".($gr{xoffset}+$gr{xlength})*$form{ex}."\" y2=\"".($gr{yoffset}+$gr{ylength})*$form{em}."\"";
 			if ( $gr{style} == 2 ) {
 				$g .= " stroke-dasharray=\"8,2\"";
 			} elsif ( $gr{style} == 3 ) {
@@ -307,7 +306,9 @@ print '   <svg:marker id="arrowend" viewBox="0 0 10 20" refX="8" refY="10" marke
 print '     <svg:path d="M 10 10 L 0 0 M 10 10 L 0 20" fill="black" stroke="black"/>'."\n";
 print '   </svg:marker>'."\n";
 print "  </svg:defs>\n";
+print '  <svg:g stroke="black">'."\n";
 print @graphs;
+print '  </svg:g>'."\n";
 print ' </svg:svg>'."\n";
 print '</div>'."\n";
 
