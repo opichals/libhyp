@@ -21,12 +21,18 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-12-09 23:43:18 $
-#   $Revision: 1.9 $
+#   $Date: 2005-12-10 02:13:19 $
+#   $Revision: 1.10 $
 #
 
 # parse the query string
 %form = map { split('=') } split('&', $ENV{QUERY_STRING});
+
+# if 'svg' then XHTML+SVG generating script
+if ( $form{svg} ) {
+	exec "./hypviewsvg.cgi";
+	# never returns
+}
 
 print "Content-Type: text/html\n\n";
 
