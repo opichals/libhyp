@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-12-10 03:00:12 $
-#   $Revision: 1.3 $
+#   $Date: 2005-12-10 03:05:54 $
+#   $Revision: 1.4 $
 #
 
 # parse the query string
@@ -32,8 +32,10 @@ if ( $form{svg} ) {
 }
 
 if ( $ENV{HTTP_ACCEPT} !~ m!application/xhtml\+xml! ) {
-	print "Content-Type: text/plain\n\n";
-	print "Browser doesn't support 'application/xhtml\+xml'";
+	print "Content-Type: text/html\n\n";
+	print "<html><body>Your browser doesn't support 'application/xhtml\+xml' content type with embedded SVG<br/><br/>";
+	print "Remove the 'svg=$form{svg}' to display content.";
+	print "</body></html>";
 	die(0);
 }
 
