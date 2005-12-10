@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-12-10 02:32:45 $
-#   $Revision: 1.2 $
+#   $Date: 2005-12-10 03:00:12 $
+#   $Revision: 1.3 $
 #
 
 # parse the query string
@@ -31,7 +31,12 @@ if ( $form{svg} ) {
 	$addtourl .= "&amp;svg=$form{svg}";
 }
 
-#print "Content-Type: text/html\n\n";
+if ( $ENV{HTTP_ACCEPT} !~ m!application/xhtml\+xml! ) {
+	print "Content-Type: text/plain\n\n";
+	print "Browser doesn't support 'application/xhtml\+xml'";
+	die(0);
+}
+
 print "Content-Type: application/xhtml+xml\n\n";
 
 require "./config.pl";
