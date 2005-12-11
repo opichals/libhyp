@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-12-11 19:54:25 $
-#   $Revision: 1.6 $
+#   $Date: 2005-12-11 20:14:42 $
+#   $Revision: 1.7 $
 #
 
 # parse the query string
@@ -51,8 +51,8 @@ $form{durl} =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex($1))/ge;  # urldecode
 $form{q} =~ s/\+/ /g;  # urldecode
 $form{q} =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex($1))/ge;  # urldecode
 
-if ( $form{dstenc} ) {
-	$ENCA = "| ./enca/bin/enca -Lcs -x \"$form{dstenc}\"";
+if ( $form{dstenc} && $config{enca} ) {
+	$ENCA = "| $config{enca} \"$form{dstenc}\"";
 	$addtourl .= "&amp;dstenc=$form{dstenc}";
 } else {
 	$form{dstenc} = "latin1";
