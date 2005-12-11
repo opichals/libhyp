@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-12-10 03:05:54 $
-#   $Revision: 1.4 $
+#   $Date: 2005-12-11 19:47:30 $
+#   $Revision: 1.5 $
 #
 
 # parse the query string
@@ -78,6 +78,7 @@ print ' [<!ENTITY nbsp "&#160;">]>'."\n";
 
 # get only the filename
 ($this) = ($ENV{SCRIPT_NAME} =~ m!.*/([^\/]+)!);
+%max = {};
 $offset = 0;
 
 
@@ -186,6 +187,11 @@ sub constructGraphics {
 				$g .= " rx=\"".(($gr{width}+$gr{height})/2)."\"";
 			}
 			push @graphs, "$g/>\n";
+
+			$gr{width} = $gr{xoffset}+$gr{width};
+			$gr{height} = $gr{yoffset}+$gr{height};
+			$max{width} = $max{width}>$gr{width}?$max{width}:$gr{width};
+			$max{height} = $max{height}>$gr{height}?$max{height}:$gr{height};
 		} elsif ( $gr{cmd} eq "line" ) {
 			$g  = "  <svg:line x1=\"".($gr{xoffset}*$form{ex})."\" y1=\"".($gr{yoffset}*$form{em});
 			$g .= "\" x2=\"".($gr{xoffset}+$gr{xlength})*$form{ex}."\" y2=\"".($gr{yoffset}+$gr{ylength})*$form{em}."\"";
@@ -209,6 +215,11 @@ sub constructGraphics {
 				$g .= ' marker-end="url(#arrowend)"';
 			}
 			push @graphs, "$g/>\n";
+
+			$gr{width} = $gr{xoffset} + ($gr{xlength}<0 ? 0 : $gr{xlength});
+			$gr{height} = $gr{yoffset} + ($gr{ylength}<0 ? 0 : $gr{ylength});
+			$max{width} = $max{width}>$gr{width}?$max{width}:$gr{width};
+			$max{height} = $max{height}>$gr{height}?$max{height}:$gr{height};
 		} elsif ( $gr{cmd} eq "refs" ) {
 			%refs = %gr;
 		}
@@ -304,7 +315,7 @@ print "\"/>$title\n</head>\n";
 print "<body>\n";
 
 print '<div style="position:absolute; top:'.(30+($form{hidemenu}!=1 ? 34:0)).'px; left:0px; z-index:0;">'."\n";
-print ' <svg:svg version="1.1" baseProfile="tiny">'."\n";
+print ' <svg:svg version="1.1" baseProfile="tiny"'." width=\"".($max{width}*$form{ex}+$form{ex})."\""." height=\"".($max{height}*$form{em}+$form{em})."\">\n";
 print "  <svg:defs>\n";
 print '   <svg:marker id="arrowbeg" viewBox="0 0 10 20" refX="2" refY="10" markerUnits="strokeWidth" markerWidth="15" markerHeight="15" orient="auto">'."\n";
 print '     <svg:path d="M 0 10 L 10 0 M 0 10 L 10 20" fill="black" stroke="black"/>'."\n";
