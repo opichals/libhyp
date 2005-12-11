@@ -4,6 +4,7 @@
 %config = (
 	href_image => "/image",
 	href_openhyp => "/"
+#	enca => "./enca/bin/enca -Lcs -x"
 );
 
 1
