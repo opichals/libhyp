@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-12-11 19:47:30 $
-#   $Revision: 1.5 $
+#   $Date: 2005-12-11 19:54:25 $
+#   $Revision: 1.6 $
 #
 
 # parse the query string
@@ -177,9 +177,10 @@ sub constructGraphics {
 			$g  = "  <svg:rect x=\"".($gr{xoffset}*$form{ex})."\" y=\"".($gr{yoffset}*$form{em})."\"";
 			$g .= " width=\"".($gr{width}*$form{ex})."\" height=\"".($gr{height}*$form{em})."\" style=\"";
 			if ( $gr{pattern} == 8 ) {
-				$g .= "fill:black;fill-opacity:1;\"";
+				$g .= "fill:rgb(0,0,0);\"";
 			} elsif ( $gr{pattern} != 0 ) {
-				$g .= "fill:black;fill-opacity:".($gr{pattern}*0.1).";\"";
+				my($grey) = (8-$gr{pattern})*32;
+				$g .= "fill:rgb($grey,$grey,$grey);\"";
 			} else {
 				$g .= "fill:none;\"";
 			}
