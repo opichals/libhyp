@@ -20,8 +20,8 @@
  *  
  * CVS info:
  *   $Author: standa $
- *   $Date: 2005-12-12 20:06:12 $
- *   $Revision: 1.3 $
+ *   $Date: 2005-12-12 20:14:59 $
+ *   $Revision: 1.4 $
  */
 
 #include <stdio.h>
@@ -82,7 +82,7 @@ int search_node( HYP *hyp, int index, const char *s )
 		while ( item ) {
 			/* if the line is complete */
 			if ( t && t[ tlen - 1 ] == '\n' ) {
-				if ( strstr( ln, s) ) {
+				if ( strcasestr( ln, s) ) {
 					char lnum[10];
 					sprintf( lnum, "%5d: ", line);
 
