@@ -20,8 +20,8 @@
  *  
  * CVS info:
  *   $Author: standa $
- *   $Date: 2005-12-12 17:55:10 $
- *   $Revision: 1.2 $
+ *   $Date: 2005-12-12 20:06:12 $
+ *   $Revision: 1.3 $
  */
 
 #include <stdio.h>
@@ -59,7 +59,7 @@ int search_node( HYP *hyp, int index, const char *s )
 		size_t tlen = 1;
 		char *t, *lnEnd;
 		int first = 1;
-		int line = -1;
+		int line = 0;
 		HYP_HDOC_IDXITEM *ie = &hyp->index_table[ index ];
 		HYP_ITEM *item;
 
@@ -93,7 +93,7 @@ int search_node( HYP *hyp, int index, const char *s )
 						printf( "<!--/a-->\n");
 						first = 0;
 					}
-					if ( line > -1 ) { /* line == -1 -> search in the title and name */
+					if ( line > 0 ) { /* line == -1 -> search in the title and name */
 						emit_quoted( lnum );
 						emit_quoted( ln);
 					}

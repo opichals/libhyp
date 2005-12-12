@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-12-12 17:15:37 $
-#   $Revision: 1.14 $
+#   $Date: 2005-12-12 20:06:12 $
+#   $Revision: 1.15 $
 #
 
 # parse the query string
@@ -238,7 +238,7 @@ foreach my $l ( @lines ) {
 
 # generate the line anchor if required
 if ( $form{line} ) {
-	splice @lines,$begidx+$form{line},0,"<a name=\"line$form{line}\"/>";
+	splice @lines,$begidx+$form{line}-1,0,"<a name=\"line$form{line}\"/>";
 }
 
 &constructGraphics();
@@ -296,7 +296,7 @@ sub emitLink {
 	my ($line) = $1;
 
 	$href =~ s|\&|\&amp;|gm; # xml & -> &amp;
-	$href .= "&amp;line=$line#line$line" if ( $line != 0 );
+	$href .= "&amp;line=$line#line$line" if ( $line > 1 );
 
 	"<a href=\"$this\?url=$form{url}$addtourl&amp;$href\">$text</a>"
 }
