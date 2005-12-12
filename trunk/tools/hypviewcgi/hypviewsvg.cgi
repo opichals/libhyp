@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-12-11 20:14:42 $
-#   $Revision: 1.7 $
+#   $Date: 2005-12-12 16:18:45 $
+#   $Revision: 1.8 $
 #
 
 # parse the query string
@@ -236,6 +236,10 @@ foreach my $l ( @lines ) {
 	$begidx++;
 }
 
+if ( $form{line} ) {
+	splice @lines,$begidx+$form{line},0,"<a name=\"line$form{line}\"/>";
+}
+
 &constructGraphics();
 
 $z = 1;
@@ -285,15 +289,20 @@ $Lines =~ s"<!--ef 0x([0-9a-fA-F][0-9a-fA-F])-->"&effects(hex($1))"gem;
 $Lines =~ s|<!--pre-->|$refs<pre>\n$images\n</pre><div style="position:absolute; top:0em; z-index:$z;"><pre>|m;
 $Lines =~ s'<!--/pre-->'</pre></div>'m;
 
+# make <a> links valid to our location
 sub emitLink {
 	my ($href,$text) = @_;
-	$href =~ s|&line=\d+||gm; # TODO: jump to line
-	$href =~ s|\&|\&amp;|gm;
+
+	# get the line number and remove from the link
+	$href =~ s|\&line=(\d+)||g;
+	my ($line) = $1;
+
+	$href =~ s|\&|\&amp;|gm; # xml & -> &amp;
+	$href .= "&amp;line=$line#line$line" if ( $line != 0 );
 
 	"<a href=\"$this\?url=$form{url}$addtourl&amp;$href\">$text</a>"
 }
 
-# make <a> links valid to our location
 $Lines =~ s|<!--a href=\"(.*?)\"-->(.*?)<!--/a-->|emitLink($1,$2);|gem;
 
 # move everything down (if menu is on)

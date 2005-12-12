@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-12-10 03:05:54 $
-#   $Revision: 1.12 $
+#   $Date: 2005-12-12 16:18:45 $
+#   $Revision: 1.13 $
 #
 
 # parse the query string
@@ -155,6 +155,9 @@ foreach my $l ( @lines ) {
 	$begidx++;
 }
 
+if ( $form{line} ) {
+	splice @lines,$begidx+$form{line},0,"<a name=\"line$form{line}\"/>";
+}
 
 $z = 1;
 
@@ -206,7 +209,21 @@ $Lines =~ s|<!--pre-->|$refs<pre>\n$images\n</pre><div style="position:absolute;
 $Lines =~ s'<!--/pre-->'</pre></div>'m;
 
 # make <a> links valid to our location
-$Lines =~ s|<!--a href=\"(.*?)\"-->(.*?)<!--/a-->|<a href=\"$this\?url=$form{url}$addtourl&$1\">$2</a>|gm;
+sub emitLink {
+	my ($href,$text) = @_;
+
+	# get the line number and remove from the link
+	$href =~ s|\&line=(\d+)||g;
+	my ($line) = $1;
+
+	$href =~ s|\&|\&amp;|gm; # xml & -> &amp;
+	$href .= "&amp;line=$line#line$line" if ( $line != 0 );
+
+	"<a href=\"$this\?url=$form{url}$addtourl&amp;$href\">$text</a>"
+}
+
+# make <a> links valid to our location
+$Lines =~ s|<!--a href=\"(.*?)\"-->(.*?)<!--/a-->|emitLink($1,$2);|gem;
 
 # move everything down (if menu is on)
 $Lines =~ s|top:0em;|top:34px;|gm  if ( $refs ne "" );
@@ -222,5 +239,6 @@ print "\">$title\n</head>";
 print "<body><div style=\"width:75ex;\">\n";
 print $Lines;
 # map { print "$_ -> $ENV{$_}\n"; } keys %ENV;
+# map { print "$_ -> $form{$_}\n"; } keys %form;
 print "</div></body></html>";
 
