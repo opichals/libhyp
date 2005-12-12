@@ -20,8 +20,8 @@
  *  
  * CVS info:
  *   $Author: standa $
- *   $Date: 2005-12-09 23:43:18 $
- *   $Revision: 1.4 $
+ *   $Date: 2005-12-12 20:06:12 $
+ *   $Revision: 1.5 $
  */
 
 #include <stdio.h>
@@ -100,7 +100,7 @@ int emit_node( HYP *hyp, int index )
 					break;
 				case HYPT_LINK:
 					if ( first ) { printf( "<!--pre-->\n"); first=0; }
-					printf( "<!--a href=\"index=%d&line=%d\"-->", ((HYP_LINK*)item)->index, ((HYP_LINK*)item)->line);
+					printf( "<!--a href=\"index=%d&line=%d\"-->", ((HYP_LINK*)item)->index, ((HYP_LINK*)item)->line+1);
 					emit_quoted( ((HYP_LINK*)item)->destination );
 					printf( "<!--/a-->");
 					break;
