@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-12-12 20:06:12 $
-#   $Revision: 1.15 $
+#   $Date: 2005-12-13 02:08:52 $
+#   $Revision: 1.16 $
 #
 
 # parse the query string
@@ -64,17 +64,21 @@ if ( $form{q} ) {
 @lines = <$FH>;
 close $FH;
 
-if ( $#lines == -1 ) {
-	unlink $form{file};
-	print "Corrupted .HYP file\n";
-	die(0);
-}
-
 if ( ! $form{html} ) {
 	print "<?xml version=\"1.0\" encoding=\"$form{dstenc}\"?>\n";
 	print '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"'."\n";
 	print ' [<!ENTITY nbsp "&#160;">]>'."\n";
 }
+
+if ( $#lines == -1 ) {
+	unlink $form{file};
+	print '<html';
+	print ' xmlns="http://www.w3.org/1999/xhtml"' if ( ! $form{html} );
+	print ">\n";
+	print "<body>Corrupted .HYP file<br/><br/>Fix the 'url=$form{url}' to point to a real ST-Guide .HYP file.</body>\n</html>\n";
+	die(0);
+}
+
 
 # get only the filename
 ($this) = ($ENV{SCRIPT_NAME} =~ m!.*/([^\/]+)!);
@@ -246,7 +250,7 @@ if ( $form{line} ) {
 $z = 1;
 
 my $images = "";
-if ( $form{hideimages} ne "1" ) {
+if ( ! $form{hideimages} ) {
 	$images = &insertImages();
 } else {
 	$addtourl .= "&amp;hideimages=$form{hideimages}";
@@ -264,7 +268,12 @@ if ( $refs{idx} ) {
 		$refs .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{next}\" accesskey=\"n\" rel=\"next\"><img src=\"$config{href_image}/inext.png\" border=\"0\"/></a>" if ( $refs{next} != -1 );
 		$refs .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{idx}\" accesskey=\"z\" rel=\"index\"><img src=\"$config{href_image}/iindex.png\" border=\"0\"/></a>" if ( $refs{idx} != -1 );
 		$refs .= "\n&nbsp;&nbsp;&nbsp;\n<a href=\"../libhyp\" accesskey=\"o\"><img src=\"$config{href_image}/iload.png\" border=\"0\"/></a>";
-		$refs .= "\n&nbsp;&nbsp;&nbsp;\n<input type=\"hidden\" name=\"url\" value=\"$form{durl}$addtourl\"/><input style=\"position:relative; top:-6px;\" accesskey=\"s\" type=\"text\" name=\"q\" width=\"10\" value=\"$form{q}\"/></form>\n";
+
+		$refs .= "\n&nbsp;&nbsp;&nbsp;\n";
+		$refs .= "<input type=\"hidden\" name=\"hideimages\" value=\"$form{hideimages}\"/>\n" if ( $form{hideimages} );
+		$refs .= "<input type=\"hidden\" name=\"svg\" value=\"$form{svg}\"/>\n" if ( $form{svg} );
+		$refs .= "<input type=\"hidden\" name=\"url\" value=\"$form{durl}\"/>\n";
+		$refs .= "<input style=\"position:relative; top:-6px;\" accesskey=\"s\" type=\"text\" name=\"q\" width=\"10\" value=\"$form{q}\"/></form>\n";
 		$refs .= "</div>";
 	} else {
 		$refs = "";
@@ -292,7 +301,7 @@ sub emitLink {
 	my ($href,$text) = @_;
 
 	# get the line number and remove from the link
-	$href =~ s|\&line=(\d+)||g;
+	$href =~ s|\&line=([-\d]\d*)||g;
 	my ($line) = $1;
 
 	$href =~ s|\&|\&amp;|gm; # xml & -> &amp;
