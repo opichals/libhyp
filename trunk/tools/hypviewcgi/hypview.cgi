@@ -21,13 +21,18 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-12-13 02:08:52 $
-#   $Revision: 1.16 $
+#   $Date: 2005-12-13 02:15:53 $
+#   $Revision: 1.17 $
 #
 
 # parse the query string
 %form = map { split('=') } split('&', $ENV{QUERY_STRING});
-if ( $form{svg} ) {
+
+# make the svg format the default output
+$dosvg = $form{svg};
+if ( $dosvg eq "" ) {
+	$dosvg = 1;
+} else {
 	$addtourl .= "&amp;svg=$form{svg}";
 }
 
@@ -271,7 +276,7 @@ if ( $refs{idx} ) {
 
 		$refs .= "\n&nbsp;&nbsp;&nbsp;\n";
 		$refs .= "<input type=\"hidden\" name=\"hideimages\" value=\"$form{hideimages}\"/>\n" if ( $form{hideimages} );
-		$refs .= "<input type=\"hidden\" name=\"svg\" value=\"$form{svg}\"/>\n" if ( $form{svg} );
+		$refs .= "<input type=\"hidden\" name=\"svg\" value=\"$form{svg}\"/>\n" if ( $form{svg} ne "" );
 		$refs .= "<input type=\"hidden\" name=\"url\" value=\"$form{durl}\"/>\n";
 		$refs .= "<input style=\"position:relative; top:-6px;\" accesskey=\"s\" type=\"text\" name=\"q\" width=\"10\" value=\"$form{q}\"/></form>\n";
 		$refs .= "</div>";
@@ -330,7 +335,7 @@ print "\"/>$header\n</head>\n";
 
 print "<body>\n";
 
-if ( $form{svg} ) {
+if ( $dosvg ) {
 	if ( $form{html} ) {
 		print "\n\n<!-- WARNING!!!\n";
 		print "     The browser doesn't support 'application/xhtml\+xml' content type which is needed\n";
