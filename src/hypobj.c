@@ -20,8 +20,8 @@
  *  
  * CVS info:
  *   $Author: standa $
- *   $Date: 2005-07-12 02:01:09 $
- *   $Revision: 1.3 $
+ *   $Date: 2006-01-24 21:38:50 $
+ *   $Revision: 1.4 $
  */
 
 
@@ -477,13 +477,16 @@ HYP* hyp_load( char *filename )
 	fread( (void*)entry_offset, hyp->header.length, 1, fh );
 
 	/* extended header scan */
-	fread( &header_ext, sizeof( HYP_FHYPEHENTRY ), 1, fh);
-	header_ext.type = ntohs(header_ext.type);
-	while ( header_ext.type != HYP_EH_END ) {
-		header_ext.length = ntohs(header_ext.length);
+	for(;;) {
+		fread( &header_ext, sizeof( HYP_FHYPEHENTRY ), 1, fh);
+		header_ext.type = ntohs(header_ext.type);
+		if ( header_ext.type == HYP_EH_END )
+			break;
 
-		if (header_ext.length  <= 256) {
+		header_ext.length = ntohs(header_ext.length);
+		if (header_ext.length <= 256) {
 			char buff[256];
+
 			fread( buff, header_ext.length, 1, fh);
 			hyp_parse_ext_header( hyp, &header_ext, buff );
 		} else {
@@ -493,7 +496,6 @@ HYP* hyp_load( char *filename )
 			hyp_parse_ext_header( hyp, &header_ext, buff );
 			free(buff);
 		}
-		fread( &header_ext, sizeof( HYP_FHYPEHENTRY ), 1, fh);
 	}
 
 	fclose( fh );
