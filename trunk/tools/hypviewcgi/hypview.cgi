@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2005-12-13 02:15:53 $
-#   $Revision: 1.17 $
+#   $Date: 2006-02-05 06:51:00 $
+#   $Revision: 1.18 $
 #
 
 # parse the query string
@@ -145,10 +145,10 @@ sub insertImages {
 
 		# @limage additional newlines
 		if ( $args{type} eq "limage" ) {
-			my $count = ($args{height}+15)/16;
+			my $count = (($args{height}+15)/16) - 1;
 			my $limgnl = "";
 			while ( $count-- >= -1 ) { $limgnl .= "\n"; }
-			splice @lines,$begidx+$args{yoffset},0,$limgnl; $begidx += 1;
+			splice @lines,$begidx+$args{ytextoffset},0,$limgnl; $begidx += 1;
 		}
 
 		$images .= "<img src=\"hypviewimg.cgi?url=$form{url}\&amp;index=$args{index}\"/></div>";
@@ -177,6 +177,8 @@ sub constructGraphics {
 		if ( $gr{cmd} eq "img" ) {
 			# compute the graphics offset caused by @limage lines
 			if ( $gr{type} eq "limage" ) {
+				$gr{ytextoffset} += $gr{yoffset} - $offset;
+
 				my $count = ($gr{height}+15)/16;
 				$offset += $count + 1;
 			}
