@@ -1,0 +1,26 @@
+hypview.cgi: ST-Guide HYPertext file viewer
+Copyright (c) 2005-2006 Standa Opichal / JAY Software
+
+
+This is an example of how to work with libhyp library.
+The library is used only in the .c files to generate
+very simple 'pseudo html' output.
+
+In addition to those libhyp usage examples it also
+provides a set of perl CGI scripts to run libhyp inside
+a CGI capable web server to allow any web browser
+view the .HYP files.
+
+This service is also available online at the following
+URL where you can browse any .HYP file accessble from
+the web:
+
+=======================
+http://libhyp.atari.org
+=======================
+
+Enjoy
+
+Standa Opichal <opichals@seznam.cz>
+JAY Software
+

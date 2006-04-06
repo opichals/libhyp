@@ -34,6 +34,7 @@ strip:
 
 dist:
 	mkdir -p $(HYPVIEWDISTDIR)
+	cp -r $(srcdir)/README $(HYPVIEWDISTDIR)
 	cp -r $(srcdir)/Makefile $(HYPVIEWDISTDIR)
 	cp -r $(srcdir)/dehyp.c $(HYPVIEWDISTDIR)
 	cp -r $(srcdir)/grephyp.c $(HYPVIEWDISTDIR)
