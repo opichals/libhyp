@@ -20,8 +20,8 @@
  *  
  * CVS info:
  *   $Author: standa $
- *   $Date: 2006-01-24 21:38:50 $
- *   $Revision: 1.4 $
+ *   $Date: 2006-04-06 13:58:04 $
+ *   $Revision: 1.5 $
  */
 
 
@@ -79,10 +79,10 @@ char* hyp_read_index_data( HYP *hyp, unsigned long index, unsigned long *len )
 	/* Supposed to be the "invers byte" encoding cause */
 	if ( hyp->preamble.flags != NULL ) {
 		if ( *hyp->preamble.flags & 0x02 ) {
-			unsigned long	TmpLength = *len;
-			char*	buff = buff;
+			unsigned long	tmp_length = *len;
+			char*	tmpbuff = buff;
 
-			while ( TmpLength-- ) *buff++ ^= 0x7F;
+			while ( tmp_length-- ) *tmpbuff++ ^= 0x7F;
 		}
 	}
 
