@@ -1,6 +1,6 @@
 /*
  * libhyp: ST-Guide HYPertext file handling library
- * Copyright (c) 2005 Standa Opichal / JAY Software
+ * Copyright (c) 2005-2006 Standa Opichal / JAY Software
  *
  * This file was taken/assembled from the lha100 sources.
  * The aim was to get a single .c file that is able to decompress
