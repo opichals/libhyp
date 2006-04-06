@@ -20,8 +20,8 @@
  *  
  * CVS info:
  *   $Author: standa $
- *   $Date: 2006-04-06 14:29:22 $
- *   $Revision: 1.4 $
+ *   $Date: 2006-04-06 15:32:26 $
+ *   $Revision: 1.5 $
  */
 
 #ifndef __LIBHYP__
@@ -30,7 +30,7 @@
 
 /* Version information */
 #define __LIBHYP_VERSION_MAJOR__     0
-#define __LIBHYP_VERSION_MINOR__     5
+#define __LIBHYP_VERSION_MINOR__     1
 #define __LIBHYP_VERSION_REVISION__  0
 
 
