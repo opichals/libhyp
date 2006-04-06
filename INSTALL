@@ -1,0 +1,28 @@
+libhyp: ST-Guide HYPertext file handling library
+Copyright (c) 2005-2006 Standa Opichal / JAY Software
+
+
+At this time there is no automation of the build
+whatsoever. The build system is based on GNU make
+and is extremely simple. To successfully build on a
+target system modifications to configuration files
+and/or Makefiles might be needed.
+
+
+In general the build is to be done as follows:
+
+# build the libhyp.a
+cd src
+make
+
+# build the dependent examples
+cd ../tools/hypviewcgi
+make
+
+
+That's all for now.
+
+
+Enjoy
+
+Standa Opichal <opichals@seznam.cz>

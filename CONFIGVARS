@@ -27,6 +27,10 @@ STRIP  = strip
 
 endif
 
+# version and folder variables
+VERSION = `cat $(top_srcdir)/src/.makeversion`
+TARGETDIR = $(top_srcdir)/lib
+DISTDIR = $(TARGETDIR)/libhyp-$(VERSION)
 
 # general compilation and optimalization options (CFLAGS)
 OPTS   = -O2 -fomit-frame-pointer
