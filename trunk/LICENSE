@@ -1,0 +1,29 @@
+libhyp: ST-Guide HYPertext file handling library
+Copyright (c) 2005-2006 Standa Opichal / JAY Software
+
+
+This package is distributed under the GPL v2.1 license a copy
+f which is attached as the 'COPYRIGHT' file.
+
+HOWEVER! The above mentioned license doesn't apply to one of
+the source files file (decodlh5.c) which is essential for
+libhyp making any sense almost all released .HYP files are
+compressed by the lh5 algorithm).
+
+The decodlh5.c file was taken/assembled from the lha100 sources.
+The aim was to get a single .c file that is able to decompress
+the lh5 compressed data with no additions. There were no
+adjustments that would change the (de)compression method in
+any way.
+
+The LHA algorithms and this file contents is licensed
+according to the original LHA license which does not
+match other source files of this application.
+
+Debian.org LHA package license document:
+http://packages.debian.org/changelogs/pool/non-free/l/lha/lha_1.14i-10/copyright
+
+
+Enjoy
+
+Standa Opichal <opichals@seznam.cz>

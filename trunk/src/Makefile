@@ -42,8 +42,7 @@ $(TARGETDIR):
 	echo -e '#include <libhyp.h>\n MAKE_LIBHYP_VERSION __LIBHYP_VERSION_MAJOR__ . __LIBHYP_VERSION_MINOR__ . __LIBHYP_VERSION_REVISION__' | $(CC) $(CFLAGS) -E - | grep MAKE_LIBHYP_VERSION | sed -e "s/MAKE_LIBHYP_VERSION //g" | sed -e "s/ //g" > $@
 
 
-dist:	.makeversion
-	@make dist-ver
+dist:	.makeversion dist-copy
 
 dist-copy:
 	mkdir -p $(DISTDIR)/include
@@ -54,9 +53,10 @@ dist-copy:
 	cp $(top_srcdir)/src/*.h $(DISTDIR)/src
 	cp $(top_srcdir)/CONFIGVARS $(DISTDIR)
 	cp $(top_srcdir)/COPYRIGHT $(DISTDIR)
-
-dist-ver: dist-copy
-	tar czf $(DISTDIR)/../libhyp-$(VERSION).tar.gz $(DISTDIR)
+	cp $(top_srcdir)/LICENSE $(DISTDIR)
+	cp $(top_srcdir)/INSTALL $(DISTDIR)
+	cp $(top_srcdir)/README $(DISTDIR)
+	cp $(top_srcdir)/Makefile $(DISTDIR)
 
 
 strip:
@@ -64,3 +64,6 @@ strip:
 
 clean: 
 	rm -rf $(OBJECTS)
+
+distclean: clean
+

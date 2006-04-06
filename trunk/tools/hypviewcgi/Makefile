@@ -8,6 +8,7 @@ top_srcdir = ../..
 srcdir     = .
 
 include $(top_srcdir)/CONFIGVARS
+HYPVIEWDISTDIR = $(DISTDIR)/tools/hypviewcgi
 
 TARGET = dehyp grephyp
 
@@ -31,5 +32,20 @@ grephyp: $(GREPHYP_OBJS) $(libhyp_dir)/libhyp.a
 strip:
 	$(STRIP) --strip-all $(TARGET)
 
+dist:
+	mkdir -p $(HYPVIEWDISTDIR)
+	cp -r $(srcdir)/Makefile $(HYPVIEWDISTDIR)
+	cp -r $(srcdir)/dehyp.c $(HYPVIEWDISTDIR)
+	cp -r $(srcdir)/grephyp.c $(HYPVIEWDISTDIR)
+	cp -r $(srcdir)/emitpng.c $(HYPVIEWDISTDIR)
+	cp -r $(srcdir)/palette.c $(HYPVIEWDISTDIR)
+	cp -r $(srcdir)/config.pl $(HYPVIEWDISTDIR)
+	cp -r $(srcdir)/hypcache.pl $(HYPVIEWDISTDIR)
+	cp -r $(srcdir)/hypviewimg.cgi $(HYPVIEWDISTDIR)
+	cp -r $(srcdir)/hypview.cgi $(HYPVIEWDISTDIR)
+
 clean: 
 	rm -rf $(DEHYP_OBJS) $(GREPHYP_OBJS)
+
+distclean: clean
+
