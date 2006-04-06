@@ -20,7 +20,7 @@ INCDIR = $(top_srcdir)/include
 
 all: $(TARGET)
 
-CFLAGS = -I$(INCDIR) $(CROSS_CFLAGS)
+CFLAGS = $(OPTS) -I$(INCDIR) $(CROSS_CFLAGS)
 
 CSRC = \
 	decodlh5.c \

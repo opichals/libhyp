@@ -13,7 +13,7 @@ TARGET = dehyp grephyp
 
 all: $(TARGET)
 
-CFLAGS = -I$(top_srcdir)/include $(CROSS_CFLAGS)
+CFLAGS = $(OPTS) -I$(top_srcdir)/include $(CROSS_CFLAGS)
 
 # engine binary objects
 DEHYP_OBJS = emitpng.o dehyp.o
