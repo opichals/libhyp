@@ -20,8 +20,8 @@
  *  
  * CVS info:
  *   $Author: standa $
- *   $Date: 2006-04-06 14:29:22 $
- *   $Revision: 1.6 $
+ *   $Date: 2006-04-08 18:07:04 $
+ *   $Revision: 1.7 $
  */
 
 #include <stdio.h>
@@ -87,10 +87,6 @@ int emit_node( HYP *hyp, int index )
 
 		printf( "<!--refs \"prev=%d&next=%d&toc=%d&idx=%d\"-->\n", ie->idx_prev, ie->idx_next, ie->idx_toc, hyp->preamble.idx_index);
 
-#if 0
-		if ( 1 ) { printf( "<!--pre-->\n"); first=0; }
-#endif
-
 		item = hyp_node_item_first( node );
 		while ( item ) {
 			switch ( item->type ) {
@@ -100,7 +96,16 @@ int emit_node( HYP *hyp, int index )
 					break;
 				case HYPT_LINK:
 					if ( first ) { printf( "<!--pre-->\n"); first=0; }
-					printf( "<!--a href=\"index=%d&line=%d\"-->", ((HYP_LINK*)item)->index, ((HYP_LINK*)item)->line+1);
+					if ( hyp->index_table[ ((HYP_LINK*)item)->index ].type == HYP_IDX_EXTERN ) {
+						HYP_NODE *extnode = hyp_parse_node( hyp, ((HYP_LINK*)item)->index);
+						if ( !extnode ) {
+							emit_quoted( ((HYP_LINK*)item)->destination );
+							break;
+						}
+						printf( "<!--a href=\"extern=%s\"-->",extnode->name);
+					} else {
+						printf( "<!--a href=\"index=%d&line=%d\"-->", ((HYP_LINK*)item)->index, ((HYP_LINK*)item)->line+1);
+					}
 					emit_quoted( ((HYP_LINK*)item)->destination );
 					printf( "<!--/a-->");
 					break;
@@ -146,9 +151,10 @@ int emit_node( HYP *hyp, int index )
 		}
 
 		hyp_free_node(node);
+
+		if ( !first) printf( "<!--/pre-->\n");
 	}
 
-	printf( "<!--/pre-->\n");
 	return 0;
 }
 
