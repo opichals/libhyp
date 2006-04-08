@@ -21,15 +21,15 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2006-04-06 14:29:22 $
-#   $Revision: 1.4 $
+#   $Date: 2006-04-08 16:44:04 $
+#   $Revision: 1.5 $
 #
 
 sub wget_fetch {
 	my( $url ) = @_;
 	if ( $url eq "") { last; }
 
-	my ( $TMP ) = "cache";
+	my ( $TMP ) = $config{cache};
 
 	$url =~ s/\+/ /g;  # urldecode
 	$url =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex($1))/ge;  # urldecode
