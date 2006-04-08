@@ -20,8 +20,8 @@
  *  
  * CVS info:
  *   $Author: standa $
- *   $Date: 2006-04-08 18:07:04 $
- *   $Revision: 1.7 $
+ *   $Date: 2006-04-08 18:09:16 $
+ *   $Revision: 1.8 $
  */
 
 #include <stdio.h>
@@ -103,6 +103,7 @@ int emit_node( HYP *hyp, int index )
 							break;
 						}
 						printf( "<!--a href=\"extern=%s\"-->",extnode->name);
+						hyp_free_node(extnode);
 					} else {
 						printf( "<!--a href=\"index=%d&line=%d\"-->", ((HYP_LINK*)item)->index, ((HYP_LINK*)item)->line+1);
 					}
