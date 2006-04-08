@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2006-04-06 14:29:22 $
-#   $Revision: 1.2 $
+#   $Date: 2006-04-08 16:44:04 $
+#   $Revision: 1.3 $
 #
 
 # parse the query string
@@ -30,6 +30,7 @@
 
 print "Content-Type: image/png\n\n";
 
+require "./config.pl";
 require "./hypcache.pl";
 $form{file} = &wget_fetch( $form{url} );
 
