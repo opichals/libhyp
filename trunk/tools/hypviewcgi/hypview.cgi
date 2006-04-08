@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2006-04-08 16:58:09 $
-#   $Revision: 1.20 $
+#   $Date: 2006-04-08 18:32:46 $
+#   $Revision: 1.21 $
 #
 
 # parse the query string
@@ -95,8 +95,30 @@ $oldeff = 0;
 sub effects {
 	my ($e) = @_;
 	my ($ch) = $e ^ $oldeff;
+	my ($ne) = ~$e;
 	my ($eff) = "";
+	
+	# {i}ggg{u}xxx{b}yyy{U}zx{I}zz{B}
+	# no optimizations for now here simple close all $oldeff and open the $e
+	$ne = $oldeff;
+	$ch = $oldeff;
+	$ekeep = $e;
+	#
 
+	if ($ch & 0x8 && $ne & 0x8 ) {
+		$eff .= "</span>";
+	}
+	if ($ch & 0x4 && $ne & 0x4 ) {
+		$eff .= "</em>";
+	}
+	if ($ch & 0x2 && $ne & 0x2 ) {
+		$eff .= "</em>";
+	}
+	if ($ch & 0x1 && $ne & 0x1 ) {
+		$eff .= "</b>";
+	}
+
+	$ch |= $ekeep;
 	if ($ch & 0x1 && $e & 0x1 ) {
 		$eff .= "<b>";
 	}
@@ -108,18 +130,6 @@ sub effects {
 	}
 	if ($ch & 0x8 && $e & 0x8 ) {
 		$eff .= "<span style=\"text-decoration: underline;\">";
-	}
-	if ($ch & 0x8 && !($e & 0x8) ) {
-		$eff .= "</span>";
-	}
-	if ($ch & 0x4 && !($e & 0x4) ) {
-		$eff .= "</em>";
-	}
-	if ($ch & 0x2 && !($e & 0x2) ) {
-		$eff .= "</em>";
-	}
-	if ($ch & 0x1 && !($e & 0x1) ) {
-		$eff .= "</b>";
 	}
 	$oldeff = $e;
 	
@@ -310,11 +320,17 @@ sub emitLink {
 	# get the line number and remove from the link
 	$href =~ s|\&line=([-\d]\d*)||g;
 	my ($line) = $1;
+	my ($url) = $form{url};
+
+	if ( $href =~ s|extern=([^/]+)/(.*)||g ) {
+		my ($hyp, $name) = ($1, $2);
+		$url =~ s![^/]+$!$hyp!;
+	}
 
 	$href =~ s|\&|\&amp;|gm; # xml & -> &amp;
 	$href .= "&amp;line=$line#line$line" if ( $line > 1 );
 
-	"<a href=\"$this\?url=$form{url}$addtourl&amp;$href\">$text</a>"
+	"<a href=\"$this\?url=${url}${addtourl}&amp;${href}\">$text</a>"
 }
 
 $Lines =~ s|<!--a href=\"(.*?)\"-->(.*?)<!--/a-->|emitLink($1,$2);|gem;
