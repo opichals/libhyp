@@ -21,13 +21,13 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2006-04-08 16:58:09 $
-#   $Revision: 1.6 $
+#   $Date: 2006-04-08 18:06:23 $
+#   $Revision: 1.7 $
 #
 
 sub wget_fetch {
 	my( $url, $cache_path ) = @_;
-	if ( $url eq "") { last; }
+	if ( $url eq "") { return; }
 
 	my ( $TMP ) = $cache_path;
 
