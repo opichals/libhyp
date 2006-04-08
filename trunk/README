@@ -5,6 +5,9 @@ Copyright (c) 2005-2006 Standa Opichal / JAY Software
 The purpose of this library is to provide free
 ST-GUIDE .HYP (and other related file formats) parser
 library which could be used by any open-source project.
+This code was originally developed as a part of the
+Blyp project - .STG WYSIWYG editor which was however
+never finished nor published.
 
 This API should be self describing. Use the examples
 in the 'tools' folder to investigate the meaning.
