@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2006-04-06 14:29:22 $
-#   $Revision: 1.19 $
+#   $Date: 2006-04-08 16:58:09 $
+#   $Revision: 1.20 $
 #
 
 # parse the query string
@@ -46,7 +46,7 @@ if ( $ENV{HTTP_ACCEPT} !~ m!application/xhtml\+xml! ) {
 
 require "./config.pl";
 require "./hypcache.pl";
-$form{file} = &wget_fetch( $form{url} );
+$form{file} = &wget_fetch( $form{url}, $config{cache} );
 
 $form{durl} = $form{url};
 $form{durl} =~ s/\+/ /g;  # urldecode

@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2006-04-08 16:44:04 $
-#   $Revision: 1.3 $
+#   $Date: 2006-04-08 16:58:10 $
+#   $Revision: 1.4 $
 #
 
 # parse the query string
@@ -32,6 +32,6 @@ print "Content-Type: image/png\n\n";
 
 require "./config.pl";
 require "./hypcache.pl";
-$form{file} = &wget_fetch( $form{url} );
+$form{file} = &wget_fetch( $form{url}, $config{cache} );
 
 system("./dehyp $form{file} $form{index}");
