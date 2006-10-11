@@ -20,8 +20,8 @@
  *  
  * CVS info:
  *   $Author: standa $
- *   $Date: 2006-04-08 18:09:16 $
- *   $Revision: 1.8 $
+ *   $Date: 2006-10-11 15:16:17 $
+ *   $Revision: 1.9 $
  */
 
 #include <stdio.h>
@@ -47,6 +47,7 @@ int emit_image( HYP *hyp, int index )
 		fclose(fp);
 
 		hyp_free_image_data(img);
+		hyp_free(hyp);
 		return res;
 	}
 	return 10;
@@ -165,13 +166,18 @@ int main( int argc, char *argv[] )
 	HYP *hyp = hyp_load( argv[1] );
 	if ( hyp ) {
 		int index = argc > 2 ? atol( argv[2] ) : 0;
+		int res;
+
 		switch ( hyp->index_table[ index ].type ) {
 			case HYP_IDX_IMAGE :
-				return emit_image( hyp, index );
+				res = emit_image( hyp, index );
+				break;
 			default :
-				return emit_node( hyp, index );
+				res = emit_node( hyp, index );
 		}
 		hyp_free( hyp );
+		return res;
 	}
+	return 1;
 }
 
