@@ -20,8 +20,8 @@
  *  
  * CVS info:
  *   $Author: standa $
- *   $Date: 2006-04-06 14:29:22 $
- *   $Revision: 1.6 $
+ *   $Date: 2006-10-11 15:16:05 $
+ *   $Revision: 1.7 $
  */
 
 
@@ -313,8 +313,11 @@ HYP_NODE *hyp_parse_node_data( HYP *hyp, char *buff, unsigned long len )
 				ie = &hyp->index_table[ index ];
 				len = *buff++ - 32;				/* 1 */
 
-				*dest = '\0'; dest = line;
-				hyp_node_add_string( node, line );
+				*dest = '\0';
+				if ( dest != line) {
+					dest = line;
+					hyp_node_add_string( node, line );
+				}
 
 				/* To have the 0 ending copy to search for */
 				if ( len ) {
@@ -334,13 +337,17 @@ HYP_NODE *hyp_parse_node_data( HYP *hyp, char *buff, unsigned long len )
 			default:
 				if ( comm >= 100 ) {
 					unsigned char effects = comm - 100;
-					*dest = '\0'; dest = line;
-					hyp_node_add_string( node, line );
+					*dest = '\0';
+					if ( dest != line) {
+						dest = line;
+						hyp_node_add_string( node, line );
+					}
 					hyp_node_add_effects( node, effects );
 				}
 				break;
 		}
 	}
+
 	return node;
 }
 
@@ -461,15 +468,22 @@ HYP* hyp_load( char *filename )
 	fread( &hyp->header, sizeof( HYP_HDOC_HEADER ), 1, fh );
 	if ( ntohl(hyp->header.magic) != 0x48444f43UL /*'HDOC'*/ ) return NULL;
 
-	hyp->preamble.flags	= NULL;
-	hyp->preamble.width	= HYP_DEFAULTWIDTH;
+	hyp->preamble.database = NULL;
+	hyp->preamble.deflt = NULL;
+	hyp->preamble.options = NULL;
+	hyp->preamble.author = NULL;
+	hyp->preamble.version = NULL;
+	hyp->preamble.help = NULL;
+	hyp->preamble.subject = NULL;
+	hyp->preamble.flags = NULL;
+	hyp->preamble.width = HYP_DEFAULTWIDTH;
 
 	/* fixup the values to CPU endian */
 	hyp->header.length = ntohl(hyp->header.length);
 	hyp->header.entry_count = ntohs(hyp->header.entry_count);
 
 	/* index table load */
-	entry_offset = hyp->header.entry_count * sizeof(HYP_HDOC_IDXITEM);
+	entry_offset = ( hyp->header.entry_count + 1 ) * sizeof(HYP_HDOC_IDXITEM);
 
 	if ( ! ( hyp->index_table = malloc( entry_offset + hyp->header.length ) ) ) return NULL;
 	entry_offset += (long)hyp->index_table;
@@ -496,6 +510,20 @@ HYP* hyp_load( char *filename )
 			hyp_parse_ext_header( hyp, &header_ext, buff );
 			free(buff);
 		}
+	}
+
+	// past the last trailing entry
+	{
+		HYP_HDOC_IDXITEM *ie = &hyp->index_table[ hyp->header.entry_count ];
+		ie->type = 0;
+		// set the offset to the file size
+		fseek( fh, 0, SEEK_END);
+		ie->offset = ftell(fh);
+		ie->compressed_len = 0;
+		ie->idx_next = 1;
+		ie->idx_prev = 1;
+		ie->idx_toc = 1;
+		ie->name = "";
 	}
 
 	fclose( fh );
@@ -550,5 +578,6 @@ void hyp_free( HYP *hyp )
 	hyp_free_preamble(hyp);
 
 	free(hyp->index_table);
+	free(hyp->filename);
 	free(hyp);
 }
