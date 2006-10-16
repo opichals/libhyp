@@ -21,19 +21,21 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2006-04-08 20:20:27 $
-#   $Revision: 1.22 $
+#   $Date: 2006-10-16 15:29:16 $
+#   $Revision: 1.23 $
 #
 
 # parse the query string
 %form = map { split('=') } split('&', $ENV{QUERY_STRING});
+
+my %au;
 
 # make the svg format the default output
 $dosvg = $form{svg};
 if ( $dosvg eq "" ) {
 	$dosvg = 1;
 } else {
-	$addtourl .= "&amp;svg=$form{svg}";
+	$au{svg} = $form{svg};
 }
 
 $form{html} = 0;
@@ -46,7 +48,7 @@ if ( $ENV{HTTP_ACCEPT} !~ m!application/xhtml\+xml! ) {
 
 require "./config.pl";
 require "./hypcache.pl";
-$form{file} = &wget_fetch( $form{url}, $config{cache} );
+( $form{file}, $au{mask} ) = &get_hyp( $form{url}, $config{cache}, $config{tmp}, $form{mask} );
 
 $form{durl} = $form{url};
 $form{durl} =~ s/\+/ /g;  # urldecode
@@ -57,9 +59,10 @@ $form{q} =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex($1))/ge;  # urldecode
 
 
 if ( $form{dstenc} && $config{enca} ) {
-	$ENCA = "| $config{enca} \"$form{dstenc}\"";
-	$addtourl .= "&amp;dstenc=$form{dstenc}";
+	$ENCA = "| ./st2latin1.pl | $config{enca} \"$form{dstenc}\"";
+	$au{dstenc} = $form{dstenc};
 } else {
+	$ENCA = "| ./st2latin1.pl";
 	$form{dstenc} = "latin1";
 }
 
@@ -163,7 +166,7 @@ sub insertImages {
 			splice @lines,$begidx+$args{ytextoffset},0,$limgnl; $begidx += 1;
 		}
 
-		$images .= "<img src=\"hypviewimg.cgi?url=$form{url}\&amp;index=$args{index}\"/></div>";
+		$images .= "<img src=\"hypviewimg.cgi?url=$form{url}".($au{mask} ne "" ? "\&amp;mask=$au{mask}" : "")."\&amp;index=$args{index}\"/></div>";
 
 		$z++;
 	}
@@ -272,12 +275,16 @@ my $images = "";
 if ( ! $form{hideimages} ) {
 	$images = &insertImages();
 } else {
-	$addtourl .= "&amp;hideimages=$form{hideimages}";
+	$au{hideimages} = $form{hideimages};
 }
 
 $Lines = join "", @lines;
 
 $header = "\n<title>$1 - $form{url}</title>\n" if ( $Lines =~ m|<!--title \"(.*?)\"-->| );
+
+# construct the $addtourl string
+my $addtourl;
+map { if ( $au{$_} ne "" ) { $addtourl .= "&amp;$_=$au{$_}"; } } sort keys %au;
 
 if ( $refs{idx} ) {
 	if ( ! $form{hidemenu} ) {
@@ -306,7 +313,7 @@ if ( $refs{idx} ) {
 }
 
 # HTML links (it is worth it in HTML browser ;)
-$Lines =~ s|(\s)((http\|ftp):/\S+)([;:,\.\]\)\}\"\']*\s)|$1<a href="$2">$2</a>$4|gm;
+$Lines =~ s|(\s)((https?\|ftp):/[^;:,\)\]\}\"\'\n]+)(\.\s)*|$1<a href="$2">$2</a>|gs;
 $Lines =~ s|(\s)([a-z]+[a-z0-9.\-_]+\@[a-z0-9.\-_]*[a-z])([;:,\.\]\)\}\"\']*\s)|$1<a href="mailto:$2">$2</a>$3|gim;
 
 # effects
@@ -319,20 +326,31 @@ $Lines =~ s'<!--/pre-->'</pre></div>'m;
 sub emitLink {
 	my ($href,$text) = @_;
 
+	my $addua = $addtourl;
+
 	# get the line number and remove from the link
 	$href =~ s|\&line=([-\d]\d*)||g;
 	my ($line) = $1;
 	my ($url) = $form{url};
 
+	# extern links
 	if ( $href =~ s|extern=([^/]+)/(.*)||g ) {
 		my ($hyp, $name) = ($1, $2);
-		$url =~ s![^/]+$!$hyp!;
+
+		# in case we are in an archive then set mask rather then URL
+		if ( $au{mask} ) {
+			$au{mask} = $hyp;
+			$addua = "";
+			map { if ( $au{$_} ne "" ) { $addua .= "&amp;$_=$au{$_}"; } } sort keys %au;
+		} else {
+			$url =~ s![^/]+$!$hyp!;
+		}
 	}
 
 	$href =~ s|\&|\&amp;|gm; # xml & -> &amp;
 	$href .= "&amp;line=$line#line$line" if ( $line > 1 );
 
-	"<a href=\"$this\?url=${url}${addtourl}&amp;${href}\">$text</a>"
+	"<a href=\"$this\?url=${url}${addua}&amp;${href}\">$text</a>"
 }
 
 $Lines =~ s|<!--a href=\"(.*?)\"-->(.*?)<!--/a-->|emitLink($1,$2);|gem;
@@ -343,20 +361,8 @@ $Lines =~ s|top:0em;|top:34px;|gm  if ( ! $form{hidemenu} );
 # strip the remaining unhandled tags
 $Lines =~ s|<!--.*?-->||gm;
 
-# atari to latin1 encoding conversion
-if ( $addtourl !~ m/dstenc/ ) {
-	my ($to_latin1) = "";
-	$to_latin1 .= "\xe7\xfc\xe9\xe2\xe4\xe0\xe5\xc7\xea\xeb\xea\xef\xee\xec\xc4\xc5";
-	$to_latin1 .= "\xc9\xe6\xc6\xf4\xf6\xf2\xfb\xf9\xff\xf6\xdc\xa2\xa3\xa5\xdf\x9f";
-	$to_latin1 .= "\xe1\xed\xf3\xfa\xf1\xd1\xaa\xba\xbf\xa9\xac\xbd\xbc\xa1\xab\xbd";
-	$to_latin1 .= "\xe3\xf5\xd8\xf8\xb4\xb5\xc0\xc3\xd5\xa8\xb4\xbb\xbb\xa9\xae\xbf";
-	$to_latin1 .= "\xc0\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf";
-	$to_latin1 .= "\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf";
-	$to_latin1 .= "\xe0\xdf\xe2\xe3\xe4\xe5\xb5\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef";
-	$to_latin1 .= "\xf0\xb1\xf2\xf3\xf4\xf5\xf7\xf7\xb0\xb7\xfa\xfb\xfc\xb2\xb3\xaf";
-
-	eval qq{ \$Lines =~ tr/\x80-\xff/$to_latin1/ };
-}
+# xBF -> &trade;
+$Lines =~ s|[\xbf]|\&trade;|g;
 
 # strip and non XML characters
 $Lines =~ s|([\x0-\x9\xb\xc\xd-\x1f])|?|gm;
