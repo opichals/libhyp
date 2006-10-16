@@ -21,9 +21,11 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2006-04-08 18:06:23 $
-#   $Revision: 1.7 $
+#   $Date: 2006-10-16 15:29:16 $
+#   $Revision: 1.8 $
 #
+
+use File::Find;
 
 sub wget_fetch {
 	my( $url, $cache_path ) = @_;
@@ -48,5 +50,110 @@ sub wget_fetch {
 
 	$FILE;
 }
+
+sub get_hyp {
+	my ($url, $cache_path, $TMP, $mask) = @_;
+
+	my $FILE = &wget_fetch( $url, $cache_path);
+
+	if ( ! &is_hyp($FILE) ) {
+
+		# check whether there is such .HYP file expanded already
+		if ( $mask !~ m/\*\?/ && -f "$FILE#$mask" && &is_hyp("$FILE#$mask") ) {
+			return ( "$FILE#$mask", $mask );
+		}
+
+		# if not configured then use /tmp as TMP
+		if ( ! $TMP ) {
+			$TMP = "/tmp";
+		}
+
+		# temp folder
+		$TMP .= "/$$";
+
+		# try to extract a file
+		mkdir $TMP;
+
+		if ( ! $mask ) {
+			$mask = "*.hyp";
+		}
+
+		&extract( $FILE, $TMP, $mask);
+		$epathname = &find_hyp($TMP, $mask);
+
+		if ( $epathname ne "" ) {
+			# move the found file $TMP/yyy/xxx to $FILE#xxx
+			( $mask ) = ( $epathname =~ m/([^\/\\]+)$/ );
+			$FILE .= "#$mask";
+			rename $epathname, $FILE;
+		}
+
+		`rm -rf $TMP`;
+	}
+
+	( $FILE, $mask );
+}
+
+
+sub is_hyp {
+	my ( $filename ) = @_;
+	my $buffer;
+
+	# equivalent of: if ( `head -c4 $_` eq 'HDOC' ) ...
+	open $FH, $filename or return 0;
+	if ( sysread($FH, $buffer, 4) == 4 && $buffer eq 'HDOC' ) {
+		close $FH;
+		return 1;
+	}
+	close $FH;
+
+	return 0;
+}
+
+
+sub extract {
+	my ($FILE, $dest, $mask) = @_;
+
+	$id = `file $FILE`;
+	if ( $id =~ /zip.*archive/i ) {
+		$cmd = "unzip -joCx -d \"$dest\" \"$FILE\" \"$mask\" 2>/dev/null";
+	} elsif ( $id =~ /lha.*archive/i ) {
+		$cmd = "lha -xfiw=\"$dest\" \"$FILE\" \"$mask\" 2>/dev/null";
+	} elsif ( $id =~ /gzip.*compressed/i ) {
+		$cmd = "tar -xz -C \"$dest\" -f \"$FILE\" \"*$mask\" 2>/dev/null";
+	} elsif ( $id =~ /bzip2.*compressed/i ) {
+		$cmd = "tar -xj -C \"$dest\" -f \"$FILE\" \"*$mask\" 2>/dev/null";
+	}
+
+	`$cmd`;
+}
+
+
+sub find_hyp {
+	my ($dirname, $mask) = @_;
+
+	# convert DOS wildcards to RE
+	$mask =~ s/\./\\./g;
+	$mask =~ s/\*/.\*/g;
+	$mask =~ s/\?/./g;
+
+	my @found;
+	sub wanted { /^$mask$/i && push @found, "$File::Find::dir/$_"; }
+	find( \&wanted, $dirname);
+		print STDERR "EXT: $#found\n\n";
+	foreach my $file ( @found ) {
+		print STDERR "EXT: $file\n\n";
+		if ( -f "$file" ) {
+			my $buffer;
+
+			if ( &is_hyp( $file) ) {
+				return $file;
+			}
+		}
+	}
+
+	"";
+}
+
 
 1
