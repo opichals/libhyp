@@ -1,34 +1,80 @@
 <!DOCTYPE HTML SYSTEM "html.dtd">
-<HTML>
-<HEAD>
-<TITLE>HypView.cgi Home - Jay Software's</TITLE>
-</HEAD>
-<BODY BGCOLOR="#cccccc" TEXT="#000000" LINK="#555555" vlink="#999999" alink="#ff0000">
-<H1>HYP View CGI Service</H1>
-<em>Want to browse .HYP files in any HTML browser?</em>
-<p>
+<html>
+<head>
+<title>libhyp home - JAY Software</title>
+<!--link rel="stylesheet" type="text/css" href="index.css"-->
+<style TYPE="text/css">
+body {
+	margin:1em;
+	padding:1em;
+	background-color: #ccc;
+}
+
+a:link {color:#09c;}
+a:visited {color:#07a;}
+a:hover {background-color:#ccc;}
+</style>
+</head>
+<body>
+
+<span style="font-weight: bold; font-size: 20pt;">
+HYP View Web Service<span style="font-size: 13pt"> - provided by <a href="http://jaysoft.atari.org" target="_top">JAY Software</a></span>
+</span>
+<br/><br/>
+
+<em>Want to browse .HYP files in an HTML browser?</em><br/>
+<br/>
+
+<table>
+<tr style="vertical-align: top;">
+<td>
 Type in URL of a .HYP file (it must be remotely accessible from that URL<br>
-for example <a href="hypview.cgi?url=http://phoenix.inf.upol.cz/~opichals/jay/docs/ataripf.hyp">http://phoenix.inf.upol.cz/~opichals/jay/docs/ataripf.hyp</a>):
+for example <a href="http://libhyp.atari.org/hypview.cgi?url=http://jaysoft.atari.org/docs/ataripf.hyp">http://jaysoft.atari.org/docs/ataripf.hyp</a>):
 <br>
 <form action=hypview.cgi>
-<input type="text" name="url" size="120" tabindex=1><br>
+<input type="text" name="url" size="60" tabindex=1 style="margin-top: 1ex;"><br>
 <br>
+
+<table>
+<tr>
+<td>
 <em>Show images</em><br>
 <input type="radio" name="hideimages" value="0" checked="checked"> yes<br>
 <input type="radio" name="hideimages" value="1"> no<br>
+</td>
+<td>
 Show menu<br>
 <input type="radio" name="hidemenu" value="0" checked="checked"> yes<br>
 <input type="radio" name="hidemenu" value="1"> no<br>
+</td>
+</tr>
+<tr style="vertical-align: bottom;">
+<td style="border-spacing: 30px;">
 <br>
 Output encoding:<br>
-<input type="radio" name="dstenc" value="" checked="checked"> default<br>
-<input type="radio" name="dstenc" value="utf8"> UTF8<br>
+<input type="radio" name="dstenc" value="" checked="checked"> latin1 (ISO-8859-1)<br>
+<input type="radio" name="dstenc" value="latin2"> latin2 (ISO-8859-2)<br>
+</td>
+<td>
 <input type="radio" name="dstenc" value="cp1250"> Windows 1250<br>
+<input type="radio" name="dstenc" value="utf8"> UTF8<br>
+</td>
+</tr>
+</table>
+
 <br>
-<input type="submit" value="Browse"><br>
+<div style="text-align: right;"><b>
+<input style="background-color: #cccccc; font-weight: bold;" type="submit" value="Browse"></b>
+</div>
 </form>
-<br>
-Navigation (only when menu is on using HTML 4.x accesskey attribute):
+</td>
+
+<td style="width:1ex;"> </td>
+<td style="width:1ex; background-color: #888888;"> </td>
+<td style="width:1ex;"> </td>
+
+<td style="border-spacing: 10px;">
+Keyboard navigation (only when menu is on using HTML 4.x accesskey attribute):
 <dl>
 <dt><em>ALT+S</em>
 <dd>Search (case sensitive)
@@ -38,20 +84,86 @@ Navigation (only when menu is on using HTML 4.x accesskey attribute):
 <dd>Next node
 <dt><em>ALT+T</em>
 <dd>Table of contents node
-<dt><em>ALT+Z</em>
+<dt><em>ALT+X</em>
 <dd>Index node
 <dt><em>ALT+O</em>
 <dd>Open another .HYP file
 </dl>
-<br>
-<em>Sorry, no support for @line, @box and other commands like e.g. external links etc. yet</em><br>
-<em>It all will go open-source soon</em><br>
-<p>
-<p>
-<center>
-<hr width="80%">
-&nbsp;<EM>&copy;&nbsp;2005 by JAY Software</EM>
-</center>
+</td>
+</tr>
 
-</BODY>
-</HTML>
+<tr>
+<td colspan="5">
+<br>
+<em>Tuned for Firefox 1.5+. Sorry, no support for some special commands yet.</em><br>
+
+<br/>
+<p>
+<em>
+Use highlights:
+</em><br/>
+
+<ul>
+<li> NEWS!!! - browse .hyp files inside a software archive directly by using the archive URL (LHA/ZIP/TGZ/TBZ2) </li>
+<li> browse through your own .hyp collection exposed via FTP or HTTP server </li>
+<li> no initial to HTML conversion overhead (everything happens on the fly) </li>
+</ul>
+
+</p>
+<p>
+<em>
+HYP publishing recomendations:
+</em><br/>
+
+<ul>
+<li> expose bare .hyp file as is on site so that it is immediatelly browsable without any .zip extractions etc. (.hyp already uses lha compression). </li>
+<li> perhaps you can add a direct link to libhyp.atari.org clicking on which anyone would be able to browse the hypertext. </li>
+</ul>
+
+</p>
+<p>
+<em>
+Here is a couple of direct .hyp browse file link examples:
+</em><br/>
+<p/>
+
+<ul>
+<li>Direct .hyp file: <a href="http://libhyp.atari.org/hypview.cgi?url=http://jaysoft.atari.org/docs/ataripf.hyp">
+http://libhyp.atari.org/hypview.cgi?url=http://jaysoft.atari.org/docs/ataripf.hyp
+</a></li>
+<li>
+Inside an Lharc archive: <a href="http://libhyp.atari.org/hypview.cgi?url=http://jaysoft.atari.org/docs/dspdoc.lzh">
+http://libhyp.atari.org/hypview.cgi?url=http://jaysoft.atari.org/docs/dspdoc.lzh
+</a></li>
+</ul>
+
+</p>
+<p>
+<em>ChangeLog</em><br/>
+<p/>
+<em>Oct 2006</em><br/>
+<ul>
+<li> support for .hyp files inside arhives (LHA, ZIP, TGZ, TBZ2) </li>
+</ul>
+<em>2005 - Apr 2006</em><br/>
+<ul>
+<li> got a libhyp.atari.org domain redirect </li>
+<li> improved encoding so that latin1 is now latin1 indeed </li>
+<li> fixed some more more or less crucial bugs </li>
+<li> support for all .hyp graphics as SVG fragments </li>
+</ul>
+
+</p>
+<p>
+<br/>
+<div style="text-align: center;">
+<hr width="80%">
+&nbsp;<EM>&copy;&nbsp;2005-2006 by <a href="http://jaysoft.atari.org" target="_top">JAY Software</a></EM>
+</div>
+</p>
+</td>
+</tr>
+</table>
+
+</body>
+</html>
