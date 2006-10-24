@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2006-10-16 15:29:16 $
-#   $Revision: 1.23 $
+#   $Date: 2006-10-24 20:29:41 $
+#   $Revision: 1.24 $
 #
 
 # parse the query string
@@ -59,7 +59,7 @@ $form{q} =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex($1))/ge;  # urldecode
 
 
 if ( $form{dstenc} && $config{enca} ) {
-	$ENCA = "| ./st2latin1.pl | $config{enca} \"$form{dstenc}\"";
+	$ENCA = "| $config{enca} \"$form{dstenc}\"";
 	$au{dstenc} = $form{dstenc};
 } else {
 	$ENCA = "| ./st2latin1.pl";
