@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2006-10-16 15:29:16 $
-#   $Revision: 1.8 $
+#   $Date: 2006-10-31 20:24:19 $
+#   $Revision: 1.9 $
 #
 
 use File::Find;
@@ -116,7 +116,7 @@ sub extract {
 
 	$id = `file $FILE`;
 	if ( $id =~ /zip.*archive/i ) {
-		$cmd = "unzip -joCx -d \"$dest\" \"$FILE\" \"$mask\" 2>/dev/null";
+		$cmd = "unzip -qqjoCx -d \"$dest\" \"$FILE\" \"$mask\" 2>/dev/null";
 	} elsif ( $id =~ /lha.*archive/i ) {
 		$cmd = "lha -xfiw=\"$dest\" \"$FILE\" \"$mask\" 2>/dev/null";
 	} elsif ( $id =~ /gzip.*compressed/i ) {
@@ -143,12 +143,12 @@ sub find_hyp {
 		print STDERR "EXT: $#found\n\n";
 	foreach my $file ( @found ) {
 		print STDERR "EXT: $file\n\n";
-		if ( -f "$file" ) {
-			my $buffer;
 
-			if ( &is_hyp( $file) ) {
-				return $file;
-			}
+		# non-Unix archives might have no permissions
+		chmod 0644, $file;
+
+		if ( -f "$file" && &is_hyp( $file) ) {
+			return $file;
 		}
 	}
 
