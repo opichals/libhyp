@@ -20,8 +20,8 @@
  *  
  * CVS info:
  *   $Author: standa $
- *   $Date: 2006-10-11 15:16:17 $
- *   $Revision: 1.9 $
+ *   $Date: 2006-11-08 23:26:50 $
+ *   $Revision: 1.10 $
  */
 
 #include <stdio.h>
@@ -165,8 +165,18 @@ int main( int argc, char *argv[] )
 {
 	HYP *hyp = hyp_load( argv[1] );
 	if ( hyp ) {
-		int index = argc > 2 ? atol( argv[2] ) : 0;
+		unsigned int index = argc > 2 ? atol( argv[2] ) : 0;
 		int res;
+
+		if ( index == 0 && argc > 2 && ! strncmp( argv[2], "node:", 5) && (argv[2])[5] != '\0' ) {
+			/* find the node by name */
+			for ( index = 0; index < hyp->header.entry_count; index++ ) {
+				if ( ! strcmp( &(argv[2])[5], hyp->index_table[ index ].name) ) break;
+			}
+		}
+
+		/* show the first node when out of bounds */
+		if ( index >= hyp->header.entry_count ) index = 0;
 
 		switch ( hyp->index_table[ index ].type ) {
 			case HYP_IDX_IMAGE :
