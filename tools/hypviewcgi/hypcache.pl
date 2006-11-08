@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2006-10-31 20:24:19 $
-#   $Revision: 1.9 $
+#   $Date: 2006-11-08 23:29:33 $
+#   $Revision: 1.10 $
 #
 
 use File::Find;
@@ -32,9 +32,6 @@ sub wget_fetch {
 	if ( $url eq "") { return; }
 
 	my ( $TMP ) = $cache_path;
-
-	$url =~ s/\+/ /g;  # urldecode
-	$url =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex($1))/ge;  # urldecode
 
 	# get the URL and strip slashes
 	my $FILE = $url;
@@ -116,7 +113,7 @@ sub extract {
 
 	$id = `file $FILE`;
 	if ( $id =~ /zip.*archive/i ) {
-		$cmd = "unzip -qqjoCx -d \"$dest\" \"$FILE\" \"$mask\" 2>/dev/null";
+		$cmd = "unzip -joCx -d \"$dest\" \"$FILE\" \"\*$mask\" 2>/dev/null";
 	} elsif ( $id =~ /lha.*archive/i ) {
 		$cmd = "lha -xfiw=\"$dest\" \"$FILE\" \"$mask\" 2>/dev/null";
 	} elsif ( $id =~ /gzip.*compressed/i ) {
@@ -140,11 +137,8 @@ sub find_hyp {
 	my @found;
 	sub wanted { /^$mask$/i && push @found, "$File::Find::dir/$_"; }
 	find( \&wanted, $dirname);
-		print STDERR "EXT: $#found\n\n";
 	foreach my $file ( @found ) {
-		print STDERR "EXT: $file\n\n";
 
-		# non-Unix archives might have no permissions
 		chmod 0644, $file;
 
 		if ( -f "$file" && &is_hyp( $file) ) {

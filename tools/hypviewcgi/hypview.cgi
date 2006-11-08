@@ -21,9 +21,11 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2006-10-24 20:29:41 $
-#   $Revision: 1.24 $
+#   $Date: 2006-11-08 23:29:33 $
+#   $Revision: 1.25 $
 #
+
+use URI::Escape;
 
 # parse the query string
 %form = map { split('=') } split('&', $ENV{QUERY_STRING});
@@ -48,14 +50,12 @@ if ( $ENV{HTTP_ACCEPT} !~ m!application/xhtml\+xml! ) {
 
 require "./config.pl";
 require "./hypcache.pl";
-( $form{file}, $au{mask} ) = &get_hyp( $form{url}, $config{cache}, $config{tmp}, $form{mask} );
 
-$form{durl} = $form{url};
-$form{durl} =~ s/\+/ /g;  # urldecode
-$form{durl} =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex($1))/ge;  # urldecode
-$form{q} =~ s/\+/ /g;  # urldecode
-$form{q} =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex($1))/ge;  # urldecode
+$form{durl} = uri_unescape( $form{url});
+$form{q} = uri_unescape( $form{q});
+$form{node} = uri_unescape( $form{node});
 
+( $form{file}, $au{mask} ) = &get_hyp( $form{durl}, $config{cache}, $config{tmp}, $form{mask} );
 
 
 if ( $form{dstenc} && $config{enca} ) {
@@ -68,6 +68,8 @@ if ( $form{dstenc} && $config{enca} ) {
 
 if ( $form{q} ) {
 	open $FH, "./grephyp \"$form{file}\" \"$form{q}\" $ENCA |";
+} elsif ( $form{node} )  {
+	open $FH, "./dehyp \"$form{file}\" \"node:$form{node}\" $ENCA |";
 } else  {
 	open $FH, "./dehyp \"$form{file}\" \"$form{index}\" $ENCA |";
 }
@@ -334,23 +336,26 @@ sub emitLink {
 	my ($url) = $form{url};
 
 	# extern links
-	if ( $href =~ s|extern=([^/]+)/(.*)||g ) {
-		my ($hyp, $name) = ($1, $2);
+	if ( $href =~ s|extern=([^\\/]+)[\\/]?(.*)||g ) {
+		my ($hyp, $node ) = ($1, $2);
+		$au{node} = uri_escape($node);
 
 		# in case we are in an archive then set mask rather then URL
 		if ( $au{mask} ) {
 			$au{mask} = $hyp;
-			$addua = "";
-			map { if ( $au{$_} ne "" ) { $addua .= "&amp;$_=$au{$_}"; } } sort keys %au;
 		} else {
 			$url =~ s![^/]+$!$hyp!;
 		}
+
+		$addua = "";
+		map { if ( $au{$_} ne "" ) { $addua .= "&amp;$_=$au{$_}"; } } sort keys %au;
 	}
 
 	$href =~ s|\&|\&amp;|gm; # xml & -> &amp;
 	$href .= "&amp;line=$line#line$line" if ( $line > 1 );
+	$href = "&amp;$href" if ( $href ne "" );
 
-	"<a href=\"$this\?url=${url}${addua}&amp;${href}\">$text</a>"
+	"<a href=\"$this\?url=${url}${addua}${href}\">$text</a>"
 }
 
 $Lines =~ s|<!--a href=\"(.*?)\"-->(.*?)<!--/a-->|emitLink($1,$2);|gem;
