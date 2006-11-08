@@ -21,9 +21,11 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2006-10-16 15:29:16 $
-#   $Revision: 1.5 $
+#   $Date: 2006-11-08 23:29:33 $
+#   $Revision: 1.6 $
 #
+
+use URI::Escape;
 
 # parse the query string
 %form = map { split('=') } split('&', $ENV{QUERY_STRING});
@@ -32,6 +34,6 @@ print "Content-Type: image/png\n\n";
 
 require "./config.pl";
 require "./hypcache.pl";
-( $form{file}, $mask ) = &get_hyp( $form{url}, $config{cache}, $config{tmp}, $form{mask} );
+( $form{file}, $mask ) = &get_hyp( uri_unescape( $form{url}), $config{cache}, $config{tmp}, $form{mask} );
 
 system("./dehyp $form{file} $form{index}");
