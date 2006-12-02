@@ -21,8 +21,8 @@
 #  
 # CVS info:
 #   $Author: standa $
-#   $Date: 2006-11-08 23:29:33 $
-#   $Revision: 1.25 $
+#   $Date: 2006-12-02 03:02:31 $
+#   $Revision: 1.26 $
 #
 
 use URI::Escape;
@@ -322,7 +322,7 @@ $Lines =~ s|(\s)([a-z]+[a-z0-9.\-_]+\@[a-z0-9.\-_]*[a-z])([;:,\.\]\)\}\"\']*\s)|
 $Lines =~ s"<!--ef 0x([0-9a-fA-F][0-9a-fA-F])-->"&effects(hex($1))"gem;
 
 $Lines =~ s|<!--pre-->|$refs<pre>\n$images\n</pre><div style="position:absolute; top:0em; z-index:$z;"><pre>|m;
-$Lines =~ s'<!--/pre-->'</pre></div>'m;
+$Lines =~ s'<!--/pre-->'&effects(0)."</pre></div>"'me;  # close all effect tags
 
 # make <a> links valid to our location
 sub emitLink {
