@@ -37,11 +37,12 @@ if ( $dosvg eq "" ) {
 
 $form{html} = 0;
 if ( $ENV{HTTP_ACCEPT} !~ m!application/xhtml\+xml! ) {
-	print "Content-Type: text/html\n\n";
+	$form{ContentType} = "text/html";
 	$form{html} = 1;
 } else {
-	print "Content-Type: application/xhtml+xml\n\n";
+	$form{ContentType} = "application/xhtml+xml";
 }
+print "Content-Type: $form{ContentType}\n\n";
 
 require "./config.pl";
 require "./hypcache.pl";
@@ -372,9 +373,9 @@ print ' xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/s
 print ">\n";
 
 print '<head>'."\n";
-print ' <meta http-equiv="Content-Type" content="text/html';
-print '; charset='.$form{dstenc} if ( $form{dstenc} );
-print "\"/>$header\n</head>\n";
+print   '<meta http-equiv="Content-Type" content="'.$form{ContentType};
+print   '; charset='.$form{dstenc} if ( $form{dstenc} );
+print "\"/>\n$header\n</head>\n";
 
 print "<body>\n";
 
