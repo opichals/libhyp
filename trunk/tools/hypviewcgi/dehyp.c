@@ -20,6 +20,7 @@
  */
 
 #include <stdio.h>
+#include <string.h> /* strpbrk */
 #include <sys/fcntl.h>
 
 #include <libhyp.h>
