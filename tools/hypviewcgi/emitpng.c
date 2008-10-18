@@ -1,6 +1,6 @@
 /*
  * libhyp: ST-Guide HYPertext file handling library
- * Copyright (c) 2005-2006 Standa Opichal / JAY Software
+ * Copyright (c) 2005-2008 Standa Opichal / JAY Software
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
