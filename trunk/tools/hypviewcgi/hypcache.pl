@@ -17,12 +17,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 #
-# $Source: /local/libhyp.cvs/libhyp/tools/hypviewcgi/hypcache.pl,v $
-#  
-# CVS info:
-#   $Author: standa $
-#   $Date: 2006-11-08 23:29:33 $
-#   $Revision: 1.10 $
+# $Id$
 #
 
 use File::Find;

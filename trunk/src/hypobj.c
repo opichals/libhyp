@@ -16,12 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
- * $Source: /local/libhyp.cvs/libhyp/src/hypobj.c,v $
- *  
- * CVS info:
- *   $Author: standa $
- *   $Date: 2006-10-11 15:16:05 $
- *   $Revision: 1.7 $
+ * $Id$
  */
 
 

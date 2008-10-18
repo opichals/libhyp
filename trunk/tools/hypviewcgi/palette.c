@@ -16,12 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
- * $Source: /local/libhyp.cvs/libhyp/tools/hypviewcgi/palette.c,v $
- *  
- * CVS info:
- *   $Author: standa $
- *   $Date: 2006-04-06 14:29:22 $
- *   $Revision: 1.2 $
+ * $Id$
  */
 
 /* Default Atari TOS VDI palette colors definition */
