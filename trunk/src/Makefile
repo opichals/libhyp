@@ -38,8 +38,13 @@ $(TARGET): $(OBJECTS) $(TARGETDIR)
 $(TARGETDIR):
 	mkdir -p $(TARGETDIR)
 
+# extract the version numbers from libhyp.h into a x.x.x form file
 .makeversion: $(INCDIR)/libhyp.h
-	echo -e '#include <libhyp.h>\n MAKE_LIBHYP_VERSION __LIBHYP_VERSION_MAJOR__ . __LIBHYP_VERSION_MINOR__ . __LIBHYP_VERSION_REVISION__' | $(CC) $(CFLAGS) -E - | grep MAKE_LIBHYP_VERSION | sed -e "s/MAKE_LIBHYP_VERSION //g" | sed -e "s/ //g" > $@
+	@# @note do not use 'echo -e' as /bin/sh doesn't understand it e.g. on OS X
+	@echo '#include <libhyp.h>' > $@.tmp
+	@echo 'MAKE_LIBHYP_VERSION __LIBHYP_VERSION_MAJOR__ . __LIBHYP_VERSION_MINOR__ . __LIBHYP_VERSION_REVISION__' >> $@.tmp
+	$(CC) $(CFLAGS) -E - < $@.tmp | grep MAKE_LIBHYP_VERSION | sed -e "s/MAKE_LIBHYP_VERSION //g" | sed -e "s/ //g" > $@
+	@rm -f $@.tmp
 
 
 dist:	.makeversion dist-copy
@@ -66,4 +71,5 @@ clean:
 	rm -rf $(OBJECTS)
 
 distclean: clean
+	rm -rf .makeversion
 
