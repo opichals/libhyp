@@ -17,12 +17,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 #
-# $Source: /local/libhyp.cvs/libhyp/tools/hypviewcgi/hypview.cgi,v $
-#  
-# CVS info:
-#   $Author: standa $
-#   $Date: 2006-12-02 03:02:31 $
-#   $Revision: 1.26 $
+# $Id$
 #
 
 use URI::Escape;

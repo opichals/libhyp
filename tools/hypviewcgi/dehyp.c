@@ -16,12 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
- * $Source: /local/libhyp.cvs/libhyp/tools/hypviewcgi/dehyp.c,v $
- *  
- * CVS info:
- *   $Author: standa $
- *   $Date: 2006-11-08 23:26:50 $
- *   $Revision: 1.10 $
+ * $Id$
  */
 
 #include <stdio.h>
