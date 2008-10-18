@@ -25,3 +25,4 @@ dist:
 distclean: 
 	@cd src; make $@
 	@cd tools/hypviewcgi; make $@
+	rm -rf $(TARGETDIR)
