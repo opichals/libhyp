@@ -40,9 +40,9 @@
 int decode_lh5( char *infp, char *outfp, long original_size, long packed_size );
 
 /***** hyp_read_index_data... Loads and decompress an index entry from .HYP file *****/
-char* hyp_read_index_data( HYP *hyp, unsigned long index, unsigned long *len )
+unsigned char* hyp_read_index_data( HYP *hyp, unsigned long index, unsigned long *len )
 {
-	char* buff;
+	unsigned char* buff;
 	HYP_HDOC_IDXITEM *ie = &hyp->index_table[ index ];
 
 	FILE *fh = fopen( hyp->filename, "rb" );
@@ -58,11 +58,11 @@ char* hyp_read_index_data( HYP *hyp, unsigned long index, unsigned long *len )
 
 	fseek( fh, ie->offset, SEEK_SET );
 	if ( ie->compressed_len ) {
-		char* cbuff = malloc( *len );
+		unsigned char* cbuff = malloc( *len );
 		fread( cbuff, *len, 1, fh );
 		fclose( fh );
 
-		decode_lh5( cbuff, buff, ie->compressed_len + *len, *len );
+		decode_lh5( (char *)cbuff, (char *)buff, ie->compressed_len + *len, *len );
 		*len += ie->compressed_len;
 
 		free( cbuff );
@@ -75,7 +75,7 @@ char* hyp_read_index_data( HYP *hyp, unsigned long index, unsigned long *len )
 	if ( hyp->preamble.flags != NULL ) {
 		if ( *hyp->preamble.flags & 0x02 ) {
 			unsigned long	tmp_length = *len;
-			char*	tmpbuff = buff;
+			unsigned char*	tmpbuff = buff;
 
 			while ( tmp_length-- ) *tmpbuff++ ^= 0x7F;
 		}
@@ -133,7 +133,7 @@ HYP_IMAGE_DATA *hyp_parse_image_data( HYP *hyp, unsigned short index )
 
 		/* Copy the present planes data */
 		{
-			const char *src_data = &data[8];
+			const unsigned char *src_data = &data[8];
 			unsigned long offset = 0;
 			unsigned char plane_data_mask = data[5] & ((1 << img->planes) - 1); /* limit the number of planes for the mask */
 			while( plane_data_mask ) {
@@ -172,31 +172,31 @@ void hyp_node_add_effects( HYP_NODE *node, unsigned char e ) {
 }
 
 static
-void hyp_node_add_string( HYP_NODE *node, char *s ) {
+void hyp_node_add_string( HYP_NODE *node, unsigned char *s ) {
 	HYP_TEXT *txt = malloc( sizeof(HYP_TEXT));
 	txt->item.type = HYPT_TEXT;
-	txt->string = strdup( s );
+	txt->string = strdup( (char *)s );
 	listInsert( &((LIST*)node->items)->tail, (LINKABLE*)txt);
 }
 
 static
-void hyp_node_add_link( HYP_NODE *node, char *d, unsigned short index, unsigned short line ) {
+void hyp_node_add_link( HYP_NODE *node, unsigned char *d, unsigned short index, unsigned short line ) {
 	HYP_LINK *lnk = malloc( sizeof(HYP_LINK));
 	lnk->item.type = HYPT_LINK;
 	lnk->index = index;
 	lnk->line = line;
-	lnk->destination = strdup( d );
+	lnk->destination = strdup( (char *)d );
 	listInsert( &((LIST*)node->items)->tail, (LINKABLE*)lnk);
 }
 
 /***** Hyp_DataToCache... Parses the .HYP node internal structure into the Blyp one *****/
-HYP_NODE *hyp_parse_node_data( HYP *hyp, char *buff, unsigned long len )
+HYP_NODE *hyp_parse_node_data( HYP *hyp, unsigned char *buff, unsigned long len )
 {
-	char line[256];
+	unsigned char line[256];
 	HYP_NODE *node;
-	char* eod = buff + len; /* end of data */
-	char* dest = line;
-	char comm;
+	unsigned char* eod = buff + len; /* end of data */
+	unsigned char* dest = line;
+	unsigned char comm;
 	unsigned short line_number, prev_line_number = -1;
 
 	node = malloc( sizeof(HYP_NODE) );
@@ -281,8 +281,8 @@ HYP_NODE *hyp_parse_node_data( HYP *hyp, char *buff, unsigned long len )
 				buff += *buff - 2;
 				break;
 			case HYP_ITITLE:
-				node->title = strdup( buff );
-				buff += strlen( buff ) + 1;
+				node->title = strdup( (char *)buff );
+				buff += strlen( (char *)buff ) + 1;
 				break;
 			case HYP_ITREE:
 				/* FIXME: TODO: RSC trees */
@@ -316,11 +316,11 @@ HYP_NODE *hyp_parse_node_data( HYP *hyp, char *buff, unsigned long len )
 
 				/* To have the 0 ending copy to search for */
 				if ( len ) {
-					strncpy( dest, buff, len );
+					strncpy( (char *)dest, (char *)buff, len );
 					buff += len;
 			        } else {
-					strcpy(  dest, ie->name );
-					len = strlen( dest);
+					strcpy(  (char *)dest, ie->name );
+					len = strlen( (char *)dest);
 				}
 				dest += len;
 
@@ -389,7 +389,7 @@ HYP_ITEM *hyp_node_item_next( HYP_ITEM *item)
 HYP_NODE *hyp_parse_node( HYP *hyp, long index )
 {
 	unsigned long len;
-	char* buffer = hyp_read_index_data( hyp, index, &len );
+	unsigned char* buffer = hyp_read_index_data( hyp, index, &len );
 	if ( buffer) {
 		HYP_NODE *node = hyp_parse_node_data( hyp, buffer, len );
 		node->name = hyp->index_table[ index ].name;
