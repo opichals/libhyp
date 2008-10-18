@@ -133,6 +133,10 @@ int search_node( HYP *hyp, int index, const char *s )
 
 int main( int argc, char *argv[] )
 {
+	/* quit with error if no arguments */
+	if (argc < 2)
+		return 1;
+
 	HYP *hyp = hyp_load( argv[1] );
 	if ( hyp ) {
 		if ( argc > 2 ) {
