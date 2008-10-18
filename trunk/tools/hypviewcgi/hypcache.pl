@@ -37,7 +37,8 @@ sub wget_fetch {
 	if ( ! -f $FILE ) {
 		#print "cached $url to $FILE";
 
-		`wget -q -O $FILE -c $url`;
+		system(eval("sprintf \"%s\", \"$config{fetch}\""));
+		# `wget -q -O $FILE -c $url`;
 	}
 
 	$FILE;
