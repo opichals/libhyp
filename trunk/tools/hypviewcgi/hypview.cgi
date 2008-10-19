@@ -254,6 +254,7 @@ sub constructGraphics {
 # collect graphics and put them into an array
 $begidx = 1;
 foreach my $l ( @lines ) {
+	$header = "\n<title>$1 - $form{url}</title>\n" if ( $l =~ m|<!--title "(.*?)"-->| );
 	if ( $l =~ m"<!--pre-->" ) { last; }
 
 	$l =~ s:<!--(\S+)\s+\"([^\"]+)\"-->\n:push @graphics, "cmd=$1&$2"; "":ge;
@@ -277,8 +278,6 @@ if ( ! $form{hideimages} ) {
 }
 
 $Lines = join "", @lines;
-
-$header = "\n<title>$1 - $form{url}</title>\n" if ( $Lines =~ m|<!--title \"(.*?)\"-->| );
 
 # construct the $addtourl string
 my $addtourl;
@@ -304,10 +303,10 @@ if ( $refs{idx} ) {
 		$addtourl .= "&amp;hidemenu=$form{hidemenu}";
 	}
 
-	$header .= "<link href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{prev}\" accesskey=\"p\" rel=\"prev\"/>\n" if ( $refs{prev} != -1 );
-	$header .= "<link href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{toc}\" accesskey=\"t\" rel=\"contents\"/>\n" if ( $refs{toc} != -1 );
-	$header .= "<link href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{next}\" accesskey=\"n\" rel=\"next\"/>\n" if ( $refs{next} != -1 );
-	$header .= "<link href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{idx}\" accesskey=\"z\" rel=\"index\"/>\n" if ( $refs{idx} != -1 );
+	$header .= "<link href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{prev}\" rel=\"prev\"/>\n" if ( $refs{prev} != -1 );
+	$header .= "<link href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{toc}\" rel=\"contents\"/>\n" if ( $refs{toc} != -1 );
+	$header .= "<link href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{next}\" rel=\"next\"/>\n" if ( $refs{next} != -1 );
+	$header .= "<link href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{idx}\" rel=\"index\"/>\n" if ( $refs{idx} != -1 );
 }
 
 # HTML links (it is worth it in HTML browser ;)
@@ -375,7 +374,7 @@ print ">\n";
 print '<head>'."\n";
 print   '<meta http-equiv="Content-Type" content="'.$form{ContentType};
 print   '; charset='.$form{dstenc} if ( $form{dstenc} );
-print "\"/>\n$header\n</head>\n";
+print "\"/>$header</head>\n";
 
 print "<body>\n";
 
