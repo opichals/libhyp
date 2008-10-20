@@ -144,7 +144,7 @@ int main( int argc, char *argv[] )
 
 			printf( "<!--refs \"prev=0&next=0&toc=0&idx=%d\"-->\n", hyp->preamble.idx_index);
 			printf( "<!--title \"'"); emit_quoted( argv[2] ); printf( "' search\"-->\n");
-			printf( "<!--pre-->\n");
+			printf( "<!--content-->\n");
 
 			for (index = 0; index < hyp->header.entry_count; index++) {
 				switch ( hyp->index_table[ index ].type ) {
@@ -156,7 +156,7 @@ int main( int argc, char *argv[] )
 				}
 			}
 
-			printf( "<!--/pre-->\n");
+			printf( "<!--/content-->\n");
 		}
 		hyp_free( hyp );
 	}

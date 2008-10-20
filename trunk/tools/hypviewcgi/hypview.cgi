@@ -146,15 +146,15 @@ sub insertImages {
 
 		if ( $args{xoffset} == 0 ) {
 			# centered image
-			$images .= "\n<div align=\"center\" style=\"position:absolute; top:0em; width:78ex; z-index:$z;\">"
+			$images .= "<div class=\"imgCenter\" style=\"z-index:$z;\"><div><pre>";
 		} else {
 			# xoffset positioned image
-			$images .= "\n<div style=\"position:absolute; top:0em; left:". int($args{xoffset}*1.35) ."ex; z-index:$z;\">";
+			$images .= "<div class=\"imgDiv\" style=\"left:". int($args{xoffset}*1.35) ."ex; z-index:$z;\"><div><pre>";
 		}
 
 		# yoffset number of newlines
 		my $count = $args{yoffset};
-		while ( $count-- >= -1 ) { $images .= "<br/>"; }
+		while ( $count-- > 0 ) { $images .= "<br/>"; }
 
 		# @limage additional newlines
 		if ( $args{type} eq "limage" ) {
@@ -164,7 +164,7 @@ sub insertImages {
 			splice @lines,$begidx+$args{ytextoffset},0,$limgnl; $begidx += 1;
 		}
 
-		$images .= "<img src=\"hypviewimg.cgi?url=$form{url}".($au{mask} ne "" ? "\&amp;mask=$au{mask}" : "")."\&amp;index=$args{index}\"/></div>";
+		$images .= "<img src=\"hypviewimg.cgi?url=$form{url}".($au{mask} ne "" ? "\&amp;mask=$au{mask}" : "")."\&amp;index=$args{index}\"/></pre></div></div>\n";
 
 		$z++;
 	}
@@ -262,7 +262,7 @@ sub constructGraphics {
 $begidx = 1;
 foreach my $l ( @lines ) {
 	$header = "\n<title>$1 - $form{url}</title>\n" if ( $l =~ m|<!--title "(.*?)"-->| );
-	if ( $l =~ m"<!--pre-->" ) { last; }
+	if ( $l =~ m"<!--content-->" ) { last; }
 
 	$l =~ s:<!--(\S+)\s+\"([^\"]+)\"-->\n:push @graphics, "cmd=$1&$2"; "":ge;
 	$begidx++;
@@ -290,11 +290,20 @@ $Lines = join "", @lines;
 my $addtourl;
 map { if ( $au{$_} ne "" ) { $addtourl .= "&amp;$_=$au{$_}"; } } sort keys %au;
 
-$header .= "<style type=\"text/css\">.outerDiv { position:relative; top:-1em;}</style>\n";
+$header .= "<style type=\"text/css\">\n";
+$header .= ".body { margin-top:0px; margin-left:2ex; }\n";
+$header .= " .menuDiv { width:78ex; }\n";
+$header .= "  .search { position:relative; top:-6px; }\n";
+$header .= " .outerDiv { position:relative; top:-1ex; }\n";
+$header .= "  .svgDiv   { position:absolute; top:".$svgpos."px; left:-1ex; z-index:998; }\n";
+$header .= "  .imgDiv   { position:absolute; top:0em; }\n";
+$header .= "  .imgCenter{ position:absolute; top:0em; text-align:center; margin:0 auto; width:78ex; }\n";
+$header .= "  .content  { position:absolute; top:0em; left:0ex; z-index:999; }\n";
+$header .= "</style>\n";
 
 if ( $refs{idx} ) {
 	if ( ! $form{hidemenu} ) {
-		$menudiv =  "<div style=\"width:78ex;\"><form action=\"$this\" method=\"GET\"><a href=\"javascript: history.go(-1)\"><img src=\"$config{href_image}/iback.png\" border=\"0\"/></a>";
+		$menudiv =  "<div class=\"menuDiv\"><form action=\"$this\" method=\"GET\"><a href=\"javascript: history.go(-1)\"><img src=\"$config{href_image}/iback.png\" border=\"0\"/></a>";
 		$menudiv .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{prev}\" accesskey=\"p\" rel=\"prev\"><img src=\"$config{href_image}/iprev.png\" border=\"0\"/></a>" if ( $refs{prev} != -1 );
 		$menudiv .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{toc}\" accesskey=\"t\" rel=\"contents\"><img src=\"$config{href_image}/itoc.png\" border=\"0\"/></a>" if ( $refs{toc} != -1 );
 		$menudiv .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{next}\" accesskey=\"n\" rel=\"next\"><img src=\"$config{href_image}/inext.png\" border=\"0\"/></a>" if ( $refs{next} != -1 );
@@ -305,7 +314,7 @@ if ( $refs{idx} ) {
 		$menudiv .= "<input type=\"hidden\" name=\"hideimages\" value=\"$form{hideimages}\"/>\n" if ( $form{hideimages} );
 		$menudiv .= "<input type=\"hidden\" name=\"svg\" value=\"$form{svg}\"/>\n" if ( $form{svg} ne "" );
 		$menudiv .= "<input type=\"hidden\" name=\"url\" value=\"$form{durl}\"/>\n";
-		$menudiv .= "<input style=\"position:relative; top:-6px;\" accesskey=\"s\" type=\"text\" name=\"q\" width=\"10\" value=\"$form{q}\"/></form>\n";
+		$menudiv .= "<input class=\"search\" accesskey=\"s\" type=\"text\" name=\"q\" width=\"10\" value=\"$form{q}\"/></form>\n";
 		$menudiv .= "</div>\n";
 	} else {
 		$menudiv = "";
@@ -325,8 +334,8 @@ $Lines =~ s|(\s)([a-z]+[a-z0-9.\-_]+\@[a-z0-9.\-_]*[a-z])([;:,\.\]\)\}\"\']*\s)|
 # effects
 $Lines =~ s"<!--ef 0x([0-9a-fA-F][0-9a-fA-F])-->"&effects(hex($1))"gem;
 
-$Lines =~ s|<!--pre-->|<pre>\n$images\n</pre><div style="position:absolute; top:0em; left:0ex; z-index:$z;"><pre>|m;
-$Lines =~ s'<!--/pre-->'&effects(0)."</pre></div>"'me;  # close all effect tags
+$Lines =~ s|<!--content-->\n|$images<div class="content"><pre>|m;
+$Lines =~ s'<!--/content-->'&effects(0)."</pre></div>"'me;  # close all effect tags
 
 # make <a> links valid to our location
 sub emitLink {
@@ -382,7 +391,7 @@ print   '<meta http-equiv="Content-Type" content="'.$form{ContentType};
 print   '; charset='.$form{dstenc} if ( $form{dstenc} );
 print "\"/>$header</head>\n";
 
-print "<body style=\"margin-top:0px; margin-left:2ex;\">\n$menudiv<div class=\"outerDiv\">\n";
+print "<body class=\"body\">\n$menudiv<div class=\"outerDiv\">\n";
 
 if ( $dosvg ) {
 	if ( $form{html} ) {
@@ -390,7 +399,7 @@ if ( $dosvg ) {
 		print "     The browser doesn't support 'application/xhtml\+xml' content type which is needed\n";
 		print "     to support embedded SVG graphics. Remove the 'svg=$form{svg}' argument to display content.\n-->\n\n\n";
 	} elsif ( $#graphs != -1 ) {
-		print '<div style="position:absolute; top:'.$svgpos.'px; left:-1ex; z-index:0;">'."\n";
+		print '<div class="svgDiv">'."\n";
 		print ' <svg:svg version="1.1" baseProfile="tiny"'." width=\"".($max{width}*$form{ex}+1)."ex\""." height=\"".($max{height}*$form{em}+1)."em\">\n";
 		print "  <svg:defs>\n";
 		print '   <svg:marker id="arrowbeg" viewBox="0 0 10 20" refX="2" refY="10" markerUnits="strokeWidth" markerWidth="15" markerHeight="15" orient="auto">'."\n";
