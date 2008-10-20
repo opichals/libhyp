@@ -290,9 +290,11 @@ $Lines = join "", @lines;
 my $addtourl;
 map { if ( $au{$_} ne "" ) { $addtourl .= "&amp;$_=$au{$_}"; } } sort keys %au;
 
+$header .= "<style type=\"text/css\">.outerDiv { position:relative; top:-1em;}</style>\n";
+
 if ( $refs{idx} ) {
 	if ( ! $form{hidemenu} ) {
-		$menudiv =  "<div style=\"position:absolute; top:0; left:2ex; width:78ex; z-index:$z;\"><form action=\"$this\" method=\"GET\"><a href=\"javascript: history.go(-1)\"><img src=\"$config{href_image}/iback.png\" border=\"0\"/></a>";
+		$menudiv =  "<div style=\"width:78ex;\"><form action=\"$this\" method=\"GET\"><a href=\"javascript: history.go(-1)\"><img src=\"$config{href_image}/iback.png\" border=\"0\"/></a>";
 		$menudiv .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{prev}\" accesskey=\"p\" rel=\"prev\"><img src=\"$config{href_image}/iprev.png\" border=\"0\"/></a>" if ( $refs{prev} != -1 );
 		$menudiv .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{toc}\" accesskey=\"t\" rel=\"contents\"><img src=\"$config{href_image}/itoc.png\" border=\"0\"/></a>" if ( $refs{toc} != -1 );
 		$menudiv .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{next}\" accesskey=\"n\" rel=\"next\"><img src=\"$config{href_image}/inext.png\" border=\"0\"/></a>" if ( $refs{next} != -1 );
@@ -304,7 +306,7 @@ if ( $refs{idx} ) {
 		$menudiv .= "<input type=\"hidden\" name=\"svg\" value=\"$form{svg}\"/>\n" if ( $form{svg} ne "" );
 		$menudiv .= "<input type=\"hidden\" name=\"url\" value=\"$form{durl}\"/>\n";
 		$menudiv .= "<input style=\"position:relative; top:-6px;\" accesskey=\"s\" type=\"text\" name=\"q\" width=\"10\" value=\"$form{q}\"/></form>\n";
-		$menudiv .= "</div>";
+		$menudiv .= "</div>\n";
 	} else {
 		$menudiv = "";
 		$addtourl .= "&amp;hidemenu=$form{hidemenu}";
@@ -375,15 +377,12 @@ print '<html';
 print ' xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg"' if ( ! $form{html} );
 print ">\n";
 
-# move everything down (if menu is on)
-$header .= "<style type=\"text/css\">.outerDiv { position:absolute; top:".($form{hidemenu} ? 0:26)."px; left:2ex; }</style>";
-
 print '<head>'."\n";
 print   '<meta http-equiv="Content-Type" content="'.$form{ContentType};
 print   '; charset='.$form{dstenc} if ( $form{dstenc} );
 print "\"/>$header</head>\n";
 
-print "<body>\n$menudiv\n<div class=\"outerDiv\">\n";
+print "<body style=\"margin-top:0px; margin-left:2ex;\">\n$menudiv<div class=\"outerDiv\">\n";
 
 if ( $dosvg ) {
 	if ( $form{html} ) {
