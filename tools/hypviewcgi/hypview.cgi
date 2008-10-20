@@ -149,7 +149,7 @@ sub insertImages {
 			$images .= "\n<div align=\"center\" style=\"position:absolute; top:0em; width:78ex; z-index:$z;\">"
 		} else {
 			# xoffset positioned image
-			$images .= "\n<div style=\"position:absolute; top:0; left:". int($args{xoffset}*1.35) ."ex; z-index:$z;\">";
+			$images .= "\n<div style=\"position:absolute; top:0em; left:". int($args{xoffset}*1.35) ."ex; z-index:$z;\">";
 		}
 
 		# yoffset number of newlines
@@ -292,21 +292,21 @@ map { if ( $au{$_} ne "" ) { $addtourl .= "&amp;$_=$au{$_}"; } } sort keys %au;
 
 if ( $refs{idx} ) {
 	if ( ! $form{hidemenu} ) {
-		$refs =  "<div style=\"position:absolute; top:0; left:2ex; z-index:$z;\"><form action=\"$this\" method=\"GET\"><a href=\"javascript: history.go(-1)\"><img src=\"$config{href_image}/iback.png\" border=\"0\"/></a>";
-		$refs .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{prev}\" accesskey=\"p\" rel=\"prev\"><img src=\"$config{href_image}/iprev.png\" border=\"0\"/></a>" if ( $refs{prev} != -1 );
-		$refs .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{toc}\" accesskey=\"t\" rel=\"contents\"><img src=\"$config{href_image}/itoc.png\" border=\"0\"/></a>" if ( $refs{toc} != -1 );
-		$refs .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{next}\" accesskey=\"n\" rel=\"next\"><img src=\"$config{href_image}/inext.png\" border=\"0\"/></a>" if ( $refs{next} != -1 );
-		$refs .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{idx}\" accesskey=\"z\" rel=\"index\"><img src=\"$config{href_image}/iindex.png\" border=\"0\"/></a>" if ( $refs{idx} != -1 );
-		$refs .= "\n&nbsp;&nbsp;&nbsp;\n<a href=\"../libhyp\" accesskey=\"o\"><img src=\"$config{href_image}/iload.png\" border=\"0\"/></a>";
+		$menudiv =  "<div style=\"position:absolute; top:0; left:2ex; width:78ex; z-index:$z;\"><form action=\"$this\" method=\"GET\"><a href=\"javascript: history.go(-1)\"><img src=\"$config{href_image}/iback.png\" border=\"0\"/></a>";
+		$menudiv .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{prev}\" accesskey=\"p\" rel=\"prev\"><img src=\"$config{href_image}/iprev.png\" border=\"0\"/></a>" if ( $refs{prev} != -1 );
+		$menudiv .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{toc}\" accesskey=\"t\" rel=\"contents\"><img src=\"$config{href_image}/itoc.png\" border=\"0\"/></a>" if ( $refs{toc} != -1 );
+		$menudiv .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{next}\" accesskey=\"n\" rel=\"next\"><img src=\"$config{href_image}/inext.png\" border=\"0\"/></a>" if ( $refs{next} != -1 );
+		$menudiv .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{idx}\" accesskey=\"z\" rel=\"index\"><img src=\"$config{href_image}/iindex.png\" border=\"0\"/></a>" if ( $refs{idx} != -1 );
+		$menudiv .= "\n&nbsp;&nbsp;&nbsp;\n<a href=\"../libhyp\" accesskey=\"o\"><img src=\"$config{href_image}/iload.png\" border=\"0\"/></a>";
 
-		$refs .= "\n&nbsp;&nbsp;&nbsp;\n";
-		$refs .= "<input type=\"hidden\" name=\"hideimages\" value=\"$form{hideimages}\"/>\n" if ( $form{hideimages} );
-		$refs .= "<input type=\"hidden\" name=\"svg\" value=\"$form{svg}\"/>\n" if ( $form{svg} ne "" );
-		$refs .= "<input type=\"hidden\" name=\"url\" value=\"$form{durl}\"/>\n";
-		$refs .= "<input style=\"position:relative; top:-6px;\" accesskey=\"s\" type=\"text\" name=\"q\" width=\"10\" value=\"$form{q}\"/></form>\n";
-		$refs .= "</div>";
+		$menudiv .= "\n&nbsp;&nbsp;&nbsp;\n";
+		$menudiv .= "<input type=\"hidden\" name=\"hideimages\" value=\"$form{hideimages}\"/>\n" if ( $form{hideimages} );
+		$menudiv .= "<input type=\"hidden\" name=\"svg\" value=\"$form{svg}\"/>\n" if ( $form{svg} ne "" );
+		$menudiv .= "<input type=\"hidden\" name=\"url\" value=\"$form{durl}\"/>\n";
+		$menudiv .= "<input style=\"position:relative; top:-6px;\" accesskey=\"s\" type=\"text\" name=\"q\" width=\"10\" value=\"$form{q}\"/></form>\n";
+		$menudiv .= "</div>";
 	} else {
-		$refs = "";
+		$menudiv = "";
 		$addtourl .= "&amp;hidemenu=$form{hidemenu}";
 	}
 
@@ -323,7 +323,7 @@ $Lines =~ s|(\s)([a-z]+[a-z0-9.\-_]+\@[a-z0-9.\-_]*[a-z])([;:,\.\]\)\}\"\']*\s)|
 # effects
 $Lines =~ s"<!--ef 0x([0-9a-fA-F][0-9a-fA-F])-->"&effects(hex($1))"gem;
 
-$Lines =~ s|<!--pre-->|$refs<pre>\n$images\n</pre><div style="position:absolute; top:0em; left:2ex; z-index:$z;"><pre>|m;
+$Lines =~ s|<!--pre-->|<pre>\n$images\n</pre><div style="position:absolute; top:0em; left:0ex; z-index:$z;"><pre>|m;
 $Lines =~ s'<!--/pre-->'&effects(0)."</pre></div>"'me;  # close all effect tags
 
 # make <a> links valid to our location
@@ -362,10 +362,6 @@ sub emitLink {
 
 $Lines =~ s|<!--a href=\"(.*?)\"-->(.*?)<!--/a-->|emitLink($1,$2);|gem;
 
-# move everything down (if menu is on)
-$menuheight = ($form{hidemenu}) ? 0:26;
-$Lines =~ s|top:0em;|top:${menuheight}px;|gm;
-
 # strip the remaining unhandled tags
 $Lines =~ s|<!--.*?-->||gm;
 
@@ -379,13 +375,15 @@ print '<html';
 print ' xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg"' if ( ! $form{html} );
 print ">\n";
 
+# move everything down (if menu is on)
+$header .= "<style type=\"text/css\">.outerDiv { position:absolute; top:".($form{hidemenu} ? 0:26)."px; left:2ex; }</style>";
+
 print '<head>'."\n";
 print   '<meta http-equiv="Content-Type" content="'.$form{ContentType};
 print   '; charset='.$form{dstenc} if ( $form{dstenc} );
 print "\"/>$header</head>\n";
 
-print "<body>\n";
-print "<div style=\"width:75ex;\">\n";
+print "<body>\n$menudiv\n<div class=\"outerDiv\">\n";
 
 if ( $dosvg ) {
 	if ( $form{html} ) {
@@ -393,7 +391,7 @@ if ( $dosvg ) {
 		print "     The browser doesn't support 'application/xhtml\+xml' content type which is needed\n";
 		print "     to support embedded SVG graphics. Remove the 'svg=$form{svg}' argument to display content.\n-->\n\n\n";
 	} elsif ( $#graphs != -1 ) {
-		print '<div style="position:absolute; top:'.($menuheight+$svgpos).'px; left:1ex; z-index:0;">'."\n";
+		print '<div style="position:absolute; top:'.$svgpos.'px; left:-1ex; z-index:0;">'."\n";
 		print ' <svg:svg version="1.1" baseProfile="tiny"'." width=\"".($max{width}*$form{ex}+1)."ex\""." height=\"".($max{height}*$form{em}+1)."em\">\n";
 		print "  <svg:defs>\n";
 		print '   <svg:marker id="arrowbeg" viewBox="0 0 10 20" refX="2" refY="10" markerUnits="strokeWidth" markerWidth="15" markerHeight="15" orient="auto">'."\n";
