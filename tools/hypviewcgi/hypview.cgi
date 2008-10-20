@@ -149,7 +149,7 @@ sub insertImages {
 			$images .= "\n<div align=\"center\" style=\"position:absolute; top:0em; width:78ex; z-index:$z;\">"
 		} else {
 			# xoffset positioned image
-			$images .= "\n<div style=\"position:absolute; top:0em; left:". int($args{xoffset}*1.35) ."ex; z-index:$z;\">";
+			$images .= "\n<div style=\"position:absolute; top:0; left:". int($args{xoffset}*1.35) ."ex; z-index:$z;\">";
 		}
 
 		# yoffset number of newlines
@@ -172,12 +172,19 @@ sub insertImages {
 	$images;
 }
 
+# the following needs to be somehow calibrated (the values are
+# just empirical from OS X browser versions (default font settings)
 if ( $form{ex} == 0 ) {
-	$form{ex} = 8;
+	$form{ex} = 1; # Safari
+	$form{ex} = 1.077; # Firefox
 }
 if ( $form{em} == 0 ) {
-	$form{em} = 16;
+	$form{em} = 0.9376; $svgpos = -2;  # Safari
+	$form{em} = 0.8124; $svgpos = -4; # Opera
+	$form{em} = 0.875; $svgpos = -4; # Firefox 3.x
 }
+# $form{ex} = 1; $form{em} = 1; $svgpos = 0;
+
 
 sub constructGraphics {
 	# fixup the @(l)image ypositions positions
@@ -198,8 +205,8 @@ sub constructGraphics {
 
 			push @limg_args, {%gr};
 		} elsif ( $gr{cmd} eq "box" ) {
-			$g  = "  <svg:rect x=\"".($gr{xoffset}*$form{ex})."\" y=\"".($gr{yoffset}*$form{em})."\"";
-			$g .= " width=\"".($gr{width}*$form{ex})."\" height=\"".($gr{height}*$form{em})."\" style=\"";
+			$g  = "  <svg:rect x=\"".($gr{xoffset}*$form{ex})."ex\" y=\"".($gr{yoffset}*$form{em}+1)."em\"";
+			$g .= " width=\"".($gr{width}*$form{ex})."ex\" height=\"".($gr{height}*$form{em})."em\" style=\"";
 			if ( $gr{pattern} == 8 ) {
 				$g .= "fill:rgb(0,0,0);\"";
 			} elsif ( $gr{pattern} != 0 ) {
@@ -218,8 +225,8 @@ sub constructGraphics {
 			$max{width} = $max{width}>$gr{width}?$max{width}:$gr{width};
 			$max{height} = $max{height}>$gr{height}?$max{height}:$gr{height};
 		} elsif ( $gr{cmd} eq "line" ) {
-			$g  = "  <svg:line x1=\"".($gr{xoffset}*$form{ex})."\" y1=\"".($gr{yoffset}*$form{em});
-			$g .= "\" x2=\"".($gr{xoffset}+$gr{xlength})*$form{ex}."\" y2=\"".($gr{yoffset}+$gr{ylength})*$form{em}."\"";
+			$g  = "  <svg:line x1=\"".($gr{xoffset}*$form{ex})."ex\" y1=\"".($gr{yoffset}*$form{em}+1);
+			$g .= "em\" x2=\"".($gr{xoffset}+$gr{xlength})*$form{ex}."ex\" y2=\"".(($gr{yoffset}+$gr{ylength})*$form{em}+1)."em\"";
 			if ( $gr{style} == 2 ) {
 				$g .= " stroke-dasharray=\"8,2\"";
 			} elsif ( $gr{style} == 3 ) {
@@ -285,7 +292,7 @@ map { if ( $au{$_} ne "" ) { $addtourl .= "&amp;$_=$au{$_}"; } } sort keys %au;
 
 if ( $refs{idx} ) {
 	if ( ! $form{hidemenu} ) {
-		$refs =  "<div style=\"position:absolute; top:0; z-index:$z;\"><form action=\"$this\" method=\"GET\"><a href=\"javascript: history.go(-1)\"><img src=\"$config{href_image}/iback.png\" border=\"0\"/></a>";
+		$refs =  "<div style=\"position:absolute; top:0; left:2ex; z-index:$z;\"><form action=\"$this\" method=\"GET\"><a href=\"javascript: history.go(-1)\"><img src=\"$config{href_image}/iback.png\" border=\"0\"/></a>";
 		$refs .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{prev}\" accesskey=\"p\" rel=\"prev\"><img src=\"$config{href_image}/iprev.png\" border=\"0\"/></a>" if ( $refs{prev} != -1 );
 		$refs .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{toc}\" accesskey=\"t\" rel=\"contents\"><img src=\"$config{href_image}/itoc.png\" border=\"0\"/></a>" if ( $refs{toc} != -1 );
 		$refs .= "\n<a href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{next}\" accesskey=\"n\" rel=\"next\"><img src=\"$config{href_image}/inext.png\" border=\"0\"/></a>" if ( $refs{next} != -1 );
@@ -316,7 +323,7 @@ $Lines =~ s|(\s)([a-z]+[a-z0-9.\-_]+\@[a-z0-9.\-_]*[a-z])([;:,\.\]\)\}\"\']*\s)|
 # effects
 $Lines =~ s"<!--ef 0x([0-9a-fA-F][0-9a-fA-F])-->"&effects(hex($1))"gem;
 
-$Lines =~ s|<!--pre-->|$refs<pre>\n$images\n</pre><div style="position:absolute; top:0em; z-index:$z;"><pre>|m;
+$Lines =~ s|<!--pre-->|$refs<pre>\n$images\n</pre><div style="position:absolute; top:0em; left:2ex; z-index:$z;"><pre>|m;
 $Lines =~ s'<!--/pre-->'&effects(0)."</pre></div>"'me;  # close all effect tags
 
 # make <a> links valid to our location
@@ -356,7 +363,8 @@ sub emitLink {
 $Lines =~ s|<!--a href=\"(.*?)\"-->(.*?)<!--/a-->|emitLink($1,$2);|gem;
 
 # move everything down (if menu is on)
-$Lines =~ s|top:0em;|top:34px;|gm  if ( ! $form{hidemenu} );
+$menuheight = ($form{hidemenu}) ? 0:26;
+$Lines =~ s|top:0em;|top:${menuheight}px;|gm;
 
 # strip the remaining unhandled tags
 $Lines =~ s|<!--.*?-->||gm;
@@ -377,6 +385,7 @@ print   '; charset='.$form{dstenc} if ( $form{dstenc} );
 print "\"/>$header</head>\n";
 
 print "<body>\n";
+print "<div style=\"width:75ex;\">\n";
 
 if ( $dosvg ) {
 	if ( $form{html} ) {
@@ -384,8 +393,8 @@ if ( $dosvg ) {
 		print "     The browser doesn't support 'application/xhtml\+xml' content type which is needed\n";
 		print "     to support embedded SVG graphics. Remove the 'svg=$form{svg}' argument to display content.\n-->\n\n\n";
 	} elsif ( $#graphs != -1 ) {
-		print '<div style="position:absolute; top:'.(30+(! $form{hidemenu} ? 34:0)).'px; left:0px; z-index:0;">'."\n";
-		print ' <svg:svg version="1.1" baseProfile="tiny"'." width=\"".($max{width}*$form{ex}+$form{ex})."\""." height=\"".($max{height}*$form{em}+$form{em})."\">\n";
+		print '<div style="position:absolute; top:'.($menuheight+$svgpos).'px; left:1ex; z-index:0;">'."\n";
+		print ' <svg:svg version="1.1" baseProfile="tiny"'." width=\"".($max{width}*$form{ex}+1)."ex\""." height=\"".($max{height}*$form{em}+1)."em\">\n";
 		print "  <svg:defs>\n";
 		print '   <svg:marker id="arrowbeg" viewBox="0 0 10 20" refX="2" refY="10" markerUnits="strokeWidth" markerWidth="15" markerHeight="15" orient="auto">'."\n";
 		print '     <svg:path d="M 0 10 L 10 0 M 0 10 L 10 20" fill="black" stroke="black"/>'."\n";
@@ -402,7 +411,6 @@ if ( $dosvg ) {
 	}
 }
 
-print "<div style=\"width:75ex;\">\n";
 print $Lines;
 # map { print "$_ -> $ENV{$_}\n"; } keys %ENV;
 # map { print "$_\n"; } ( $0, $1, $2);
