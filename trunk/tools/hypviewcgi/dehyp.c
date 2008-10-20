@@ -88,11 +88,11 @@ int emit_node( HYP *hyp, int index )
 		while ( item ) {
 			switch ( item->type ) {
 				case HYPT_TEXT:
-					if ( first ) { printf( "<!--pre-->\n"); first=0; }
+					if ( first ) { printf( "<!--pre-->"); first=0; }
 					emit_quoted( ((HYP_TEXT*)item)->string );
 					break;
 				case HYPT_LINK:
-					if ( first ) { printf( "<!--pre-->\n"); first=0; }
+					if ( first ) { printf( "<!--pre-->"); first=0; }
 					if ( hyp->index_table[ ((HYP_LINK*)item)->index ].type == HYP_IDX_EXTERN ) {
 						HYP_NODE *extnode = hyp_parse_node( hyp, ((HYP_LINK*)item)->index);
 						if ( !extnode ) {
@@ -108,7 +108,7 @@ int emit_node( HYP *hyp, int index )
 					printf( "<!--/a-->");
 					break;
 				case HYPT_EFFECTS:
-					if ( first ) { printf( "<!--pre-->\n"); first=0; }
+					if ( first ) { printf( "<!--pre-->"); first=0; }
 					printf( "<!--ef 0x%02x-->", (int)((HYP_EFFECTS*)item)->effects );
 					break;
 				case HYPT_LINE:
@@ -150,7 +150,7 @@ int emit_node( HYP *hyp, int index )
 
 		hyp_free_node(node);
 
-		if ( !first) printf( "<!--/pre-->\n");
+		if ( !first) printf( "<!--/pre-->");
 	}
 
 	return 0;
