@@ -36,11 +36,11 @@ if ( $dosvg eq "" ) {
 }
 
 $form{html} = 0;
-if ( $ENV{HTTP_ACCEPT} !~ m!application/xhtml\+xml! ) {
+if ( $ENV{HTTP_ACCEPT} =~ m!application/xhtml\+xml! ) {
+	$form{ContentType} = "application/xhtml+xml";
+} else {
 	$form{ContentType} = "text/html";
 	$form{html} = 1;
-} else {
-	$form{ContentType} = "application/xhtml+xml";
 }
 print "Content-Type: $form{ContentType}\n\n";
 
@@ -294,7 +294,7 @@ $header .= "<style type=\"text/css\">\n";
 $header .= ".body { margin-top:0px; margin-left:2ex; }\n";
 $header .= " .menuDiv { width:78ex; }\n";
 $header .= "  .search { position:relative; top:-6px; }\n";
-$header .= " .outerDiv { position:relative; top:-1ex; }\n";
+$header .= " .outerDiv { position:relative; top:-1ex; height:100%; width:100% }\n";
 $header .= "  .svgDiv   { position:absolute; top:".$svgpos."px; left:-1ex; z-index:998; }\n";
 $header .= "  .imgDiv   { position:absolute; top:0em; }\n";
 $header .= "  .imgCenter{ position:absolute; top:0em; text-align:center; margin:0 auto; width:78ex; }\n";
@@ -326,10 +326,6 @@ if ( $refs{idx} ) {
 	$header .= "<link href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{next}\" rel=\"next\"/>\n" if ( $refs{next} != -1 );
 	$header .= "<link href=\"$this\?url=$form{url}$addtourl&amp;index=$refs{idx}\" rel=\"index\"/>\n" if ( $refs{idx} != -1 );
 }
-
-# HTML links (it is worth it in HTML browser ;)
-$Lines =~ s|(\s)((https?\|ftp):/[^;:,\)\]\}\"\'\n]+)(\.\s)*|$1<a href="$2">$2</a>|gs;
-$Lines =~ s|(\s)([a-z]+[a-z0-9.\-_]+\@[a-z0-9.\-_]*[a-z])([;:,\.\]\)\}\"\']*\s)|$1<a href="mailto:$2">$2</a>$3|gim;
 
 # effects
 $Lines =~ s"<!--ef 0x([0-9a-fA-F][0-9a-fA-F])-->"&effects(hex($1))"gem;
@@ -372,6 +368,10 @@ sub emitLink {
 }
 
 $Lines =~ s|<!--a href=\"(.*?)\"-->(.*?)<!--/a-->|emitLink($1,$2);|gem;
+
+# HTML links (it is worth it in HTML browser ;)
+$Lines =~ s|(\s)((https?\|ftp):/[^;:,\)\]\}\"\'<>\n]+)(\.\s)*|$1<a href="$2">$2</a>|gs;
+$Lines =~ s|(\s)([a-z]+[a-z0-9.\-_]+\@[a-z0-9.\-_]*[a-z])([;:,\.\]\)\}\"\'<>]*\s)|$1<a href="mailto:$2">$2</a>$3|gim;
 
 # strip the remaining unhandled tags
 $Lines =~ s|<!--.*?-->||gm;
