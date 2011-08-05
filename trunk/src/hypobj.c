@@ -43,6 +43,7 @@ int decode_lh5( char *infp, char *outfp, long original_size, long packed_size );
 unsigned char* hyp_read_index_data( HYP *hyp, unsigned long index, unsigned long *len )
 {
 	unsigned char* buff;
+	unsigned long  complete_len;
 	HYP_HDOC_IDXITEM *ie = &hyp->index_table[ index ];
 
 	FILE *fh = fopen( hyp->filename, "rb" );
@@ -52,9 +53,17 @@ unsigned char* hyp_read_index_data( HYP *hyp, unsigned long index, unsigned long
 	}
 
 	*len = hyp->index_table[ index + 1 ].offset - ie->offset;
-	buff = malloc( ie->compressed_len + *len );
-	if ( !buff )
+	complete_len = ie->compressed_len + *len;
+	if ( !complete_len ) {
+		fclose( fh );
 		return NULL;
+	}
+
+	buff = malloc( complete_len );
+	if ( !buff ) {
+		fclose( fh );
+		return NULL;
+	}
 
 	fseek( fh, ie->offset, SEEK_SET );
 	if ( ie->compressed_len ) {
@@ -62,7 +71,7 @@ unsigned char* hyp_read_index_data( HYP *hyp, unsigned long index, unsigned long
 		fread( cbuff, *len, 1, fh );
 		fclose( fh );
 
-		decode_lh5( (char *)cbuff, (char *)buff, ie->compressed_len + *len, *len );
+		decode_lh5( (char *)cbuff, (char *)buff, complete_len, *len );
 		*len += ie->compressed_len;
 
 		free( cbuff );
