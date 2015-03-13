@@ -1,4 +1,4 @@
-#ST-Guide .HYP file parser library written in C
+#ST-Guide .HYP file parser C library
 
 The tools folder contains an example of how to work with the libhyp library. The library is used only in the .c files to generate very simple 'pseudo html' output.
 
