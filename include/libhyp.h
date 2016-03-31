@@ -22,6 +22,7 @@
 #ifndef __LIBHYP__
 #define __LIBHYP__
 
+#include <inttypes.h>
 
 /* Version information */
 #define __LIBHYP_VERSION_MAJOR__     0
@@ -31,8 +32,8 @@
 
 /* .HYP file header */
 typedef struct _HYP_HDOC_HEADER {
-	unsigned long	magic;			/* Should be 'HDOC' */
-	unsigned long	length;
+	uint32_t		magic;			/* Should be 'HDOC' */
+	uint32_t		length;
 	unsigned short	entry_count;
 	unsigned char	hcp_version;
 	unsigned char	os_id;
@@ -53,8 +54,8 @@ typedef struct _HYP_HDOC_HEADER {
 
 typedef struct _HYP_HDOC_IDXITEM {
 	unsigned char	type;
-	unsigned long	offset;
-	unsigned long	compressed_len;
+	uint32_t		offset;
+	uint32_t		compressed_len;
 	unsigned short	idx_next;
 	unsigned short	idx_prev;
 	unsigned short	idx_toc;
@@ -136,7 +137,7 @@ typedef struct _HYP_IMAGE {
 typedef struct _HYP_IMAGE_DATA {
 	short		width		/* image width in pixels */;
 	short		height;		/* image height in pixels */
-	unsigned long	pitch;		/* line length in bytes */
+	uint32_t	pitch;		/* line length in bytes */
 	short		planes;		/* image color plane count (color_count = 1<<planes)*/
 	void		*data;		/* plane by plane raw data */
 } HYP_IMAGE_DATA;
@@ -165,7 +166,7 @@ typedef struct _HYP {
 		char	      *options;
 		char          *flags;		/* Supposed to cause the CHIPS60 encoding (each byte = 7F - original contents) */
 		unsigned char width;		/* HYP preamble @width value */
-		long          idx_index;	/* 'Index' named node index */
+		int32_t       idx_index;	/* 'Index' named node index */
 	} preamble;
 } HYP;
 
