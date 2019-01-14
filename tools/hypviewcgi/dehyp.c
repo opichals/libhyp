@@ -20,6 +20,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h> /* atol */
 #include <string.h> /* strpbrk */
 #include <sys/fcntl.h>
 
@@ -52,7 +53,7 @@ int emit_image( HYP *hyp, int index )
 void emit_quoted( char *s )
 {
 	char *t;
-	while( t = (char*)strpbrk( s, "<>&\'\"" ) ) {
+	while( (t = (char*)strpbrk( s, "<>&\'\"" )) ) {
 		char c = *t;
 		*t = '\0';
 		printf( "%s", s );

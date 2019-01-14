@@ -30,7 +30,7 @@
 void emit_quoted( char *s )
 {
 	char *t;
-	while( t = (char*)strpbrk( s, "<>&\'\"" ) ) {
+	while( (t = (char*)strpbrk( s, "<>&\'\"" )) ) {
 		char c = *t;
 		*t = '\0';
 		printf( "%s", s );

@@ -20,7 +20,7 @@
  */
 
 #include <stdlib.h>
-#include <libpng12/png.h>
+#include <libpng16/png.h>
 
 #include <libhyp.h>
 
@@ -45,7 +45,7 @@ char emit_image_png(FILE *fp, HYP_IMAGE_DATA *img)
 
 	/* setjmp() must be called in every function
 	 * that calls a PNG-reading libpng function */
-	if (setjmp(png_ptr->jmpbuf))
+	if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		return 3;
@@ -54,7 +54,7 @@ char emit_image_png(FILE *fp, HYP_IMAGE_DATA *img)
 	png_init_io(png_ptr, fp);
 
 	/* set the zlib compression level */
-	png_set_compression_level(png_ptr, Z_BEST_COMPRESSION);
+	png_set_compression_level(png_ptr, 9 /*Z_BEST_COMPRESSION*/);
 
 	/* write PNG info to structure */
 	png_set_IHDR(png_ptr, info_ptr, img->width, img->height, img->planes < 8 ? 8 : img->planes,
@@ -75,7 +75,7 @@ char emit_image_png(FILE *fp, HYP_IMAGE_DATA *img)
 
 	/* setjmp() must be called in every function
 	 * that calls a PNG-writing libpng function */
-	if (setjmp(png_ptr->jmpbuf))
+	if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		return 3;

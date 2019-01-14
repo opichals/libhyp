@@ -33,10 +33,10 @@ TARGETDIR = $(top_srcdir)/lib
 DISTDIR = $(TARGETDIR)/libhyp-$(VERSION)
 
 # general compilation and optimalization options (CFLAGS)
-OPTS   = -O2 -fomit-frame-pointer -I/usr/X11/include
+OPTS   = -O2 -fomit-frame-pointer -I/usr/local/include
 #OPTS   = -O0 -ggdb
 
 
 # library folders for tools
 libhyp_dir = $(top_srcdir)/lib
-libpng_dir = /usr/X11/lib
+libpng_dir = /usr/local/lib
