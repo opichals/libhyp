@@ -19,10 +19,14 @@
  * $Id$
  */
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h> /* atol */
 #include <string.h> /* strpbrk */
-#include <sys/fcntl.h>
+#include <fcntl.h>
 
 #include <libhyp.h>
 
@@ -34,8 +38,9 @@ int emit_image( HYP *hyp, int index )
 {
 	HYP_IMAGE_DATA *img = hyp_parse_image_data( hyp, index );
 	if ( img ) {
-#if 0
-		FILE *fp = fopen("xxx.png", "wb");
+#ifdef __EMSCRIPTEN__
+		/* the fdopen below doesn't do proper binary encoding in emscripten */
+		FILE *fp = fopen("/root/xxx.png", "wb");
 #else
 		/* stdout in binary mode */
 		FILE *fp = fdopen(fileno(stdout), "wb");
@@ -159,6 +164,13 @@ int emit_node( HYP *hyp, int index )
 
 int main( int argc, char *argv[] )
 {
+#ifdef __EMSCRIPTEN__
+	EM_ASM(
+		FS.mkdir('/root');
+		FS.mount(NODEFS, { root: '.' }, '/root');
+	);
+#endif
+
 	/* quit with error if no arguments */
 	if (argc < 2)
 		return 1;

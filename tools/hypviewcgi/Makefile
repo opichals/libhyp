@@ -10,7 +10,7 @@ srcdir     = .
 include $(top_srcdir)/CONFIGVARS
 HYPVIEWDISTDIR = $(DISTDIR)/tools/hypviewcgi
 
-TARGET = dehyp grephyp
+TARGET = dehyp$(TARGET_SUFFIX) grephyp$(TARGET_SUFFIX)
 
 all: $(TARGET)
 
@@ -27,6 +27,13 @@ dehyp: $(DEHYP_OBJS) $(libhyp_dir)/libhyp.a
 	$(CC) -o $@ $(DEHYP_OBJS) -L$(libhyp_dir) -lhyp -L$(libpng_dir) -lpng $(CROSS_LDFLAGS)
 
 grephyp: $(GREPHYP_OBJS) $(libhyp_dir)/libhyp.a
+	$(CC) -o $@ $(GREPHYP_OBJS) -L$(libhyp_dir) -lhyp $(CROSS_LDFLAGS)
+
+# emscripten
+dehyp.html: $(DEHYP_OBJS) $(libhyp_dir)/libhyp.a
+	$(CC) -o $@ $(DEHYP_OBJS) -L$(libhyp_dir) -lhyp -L$(libpng_dir) -s USE_ZLIB=1 -s USE_LIBPNG=1 $(CROSS_LDFLAGS)
+
+grephyp.html: $(GREPHYP_OBJS) $(libhyp_dir)/libhyp.a
 	$(CC) -o $@ $(GREPHYP_OBJS) -L$(libhyp_dir) -lhyp $(CROSS_LDFLAGS)
 
 strip:

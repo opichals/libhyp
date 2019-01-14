@@ -33,7 +33,7 @@ OBJECTS = $(CSRC:.c=.o)
 hypobj.o: $(INCDIR)/libhyp.h hypobj.h
 
 $(TARGET): $(OBJECTS) $(TARGETDIR)
-	$(AR) cr $@ $(OBJECTS); $(RANLIB) $@
+	$(AR) rcs $@ $(OBJECTS)
 
 $(TARGETDIR):
 	mkdir -p $(TARGETDIR)

@@ -2,6 +2,10 @@
 
 NATIVE_CC = gcc
 
+ifdef EMMAKEN_COMPILER
+TARGET_SUFFIX   = .html
+endif
+
 ifeq ($(M68K_ATARI_MINT_CROSS),y)
 
 CROSSPREFIX = m68k-atari-mint
@@ -16,15 +20,6 @@ STRIP  = $(CROSSPREFIX)-strip
 CROSS_CFLAGS = $(M68K_ATARI_MINT_CFLAGS)
 CROSS_LDFLAGS= $(M68K_ATARI_MINT_LDFLAGS)
 
-else
-
-CC     = gcc
-AS     = as
-LD     = ld
-AR     = ar
-RANLIB = ranlib
-STRIP  = strip
-
 endif
 
 # version and folder variables
@@ -33,8 +28,8 @@ TARGETDIR = $(top_srcdir)/lib
 DISTDIR = $(TARGETDIR)/libhyp-$(VERSION)
 
 # general compilation and optimalization options (CFLAGS)
-OPTS   = -O2 -fomit-frame-pointer -I/usr/local/include
-#OPTS   = -O0 -ggdb
+# OPTS   = -O2 -fomit-frame-pointer -I/usr/local/include
+OPTS   = -O0 -g -I/usr/local/include
 
 
 # library folders for tools

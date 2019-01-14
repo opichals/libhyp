@@ -21,7 +21,7 @@
 
 #include <stdio.h>
 #include <string.h> /* strpbrk */
-#include <sys/fcntl.h>
+#include <fcntl.h>
 
 #include <libhyp.h>
 
@@ -78,7 +78,7 @@ int search_node( HYP *hyp, int index, const char *s )
 		while ( item ) {
 			/* if the line is complete */
 			if ( t && t[ tlen - 1 ] == '\n' ) {
-				if ( strcasestr( ln, s) ) {
+				if ( strcasecmp( ln, s) ) {
 					char lnum[10];
 					sprintf( lnum, "%5d: ", line);
 
