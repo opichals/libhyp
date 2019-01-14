@@ -43,7 +43,6 @@ int emit_image( HYP *hyp, int index )
 		fclose(fp);
 
 		hyp_free_image_data(img);
-		hyp_free(hyp);
 		return res;
 	}
 	return 10;
