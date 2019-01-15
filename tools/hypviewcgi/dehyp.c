@@ -166,8 +166,10 @@ int main( int argc, char *argv[] )
 {
 #ifdef __EMSCRIPTEN__
 	EM_ASM(
-		FS.mkdir('/root');
-		FS.mount(NODEFS, { root: '.' }, '/root');
+		if (typeof process === 'object') {
+			FS.mkdir('/root');
+			FS.mount(NODEFS, { root: '.' }, '/root');
+		}
 	);
 #endif
 

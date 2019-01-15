@@ -1,0 +1,137 @@
+<html>
+<head>
+  <title>
+    HYPView (an emscripten showcase) v0.1
+  </title>
+  <style type="text/css">
+    .body { margin-top:0px; margin-left:2ex; }
+     .menuDiv { width:78ex; height: 24px; }
+      .search { position:relative; top:-6px; }
+     .outerDiv { position:relative; top:-1ex; height:100%; width:100% }
+      .svgDiv   { position:absolute; top:".$svgpos."px; left:-1ex; z-index:998; }
+      .imgDiv   { position:absolute; top:0em; }
+      .imgCenter{ position:absolute; top:0em; text-align:center; margin:0 auto; width:78ex; }
+      .content  { position:absolute; top:0em; left:0ex; z-index:999; }
+      .content > div > pre  { margin:0 }
+      .icon {
+        width: 32px;
+        height: 24px;
+        display: inline-block;
+      }
+    #ref_back .icon { background: url('image/iback.png') left top no-repeat; }
+    #ref_prev .icon { background: url('image/iprev.png') left top no-repeat; }
+    #ref_toc  .icon { background: url('image/itoc.png') left top no-repeat; }
+    #ref_next .icon { background: url('image/inext.png') left top no-repeat; }
+    #ref_idx  .icon { background: url('image/iindex.png') left top no-repeat; }
+
+    #ref_file { vertical-align: top; }
+
+    ::-webkit-file-upload-button {
+        -webkit-appearance: square-button;
+        /*
+        background-image: "image/iload.png";
+         */
+    }
+  </style>
+
+  <script type="text/javascript">
+    var stdoutBuffer = "";
+    var Module = {
+        preRun: function() {
+            function stdout(code) {
+                stdoutBuffer += String.fromCharCode(code);
+            }
+
+            FS.init(null, stdout, null);
+        }
+    };
+  </script>
+
+  <script type="text/javascript" src="dehyp.js"></script>
+
+  <script type="text/javascript">
+    var hypfile = 'tos.hyp';
+
+    // FileReader (allows local file access)
+    function handle_files(files) {
+        for (i = 0; i < files.length; i++) {
+            var file = files[i];
+            console.log('File: ', file);
+            var reader = new FileReader();
+            ret = [];
+            reader.onload = function(e) {
+                console.log('Done: ', e);
+
+                // create emscripten filesystem file entry
+                FS.createDataFile('/cache', file.name, e.target.result, true, false);
+                hypfile = file.name;
+
+                dehyp(hypfile, 0);
+            };
+            reader.onerror = function(stuff) {
+                console.log("error", stuff, stuff.toString(), stuff.getMessage && stuff.getMessage());
+            };
+            reader.readAsBinaryString(file); //readAsdataURL
+        }
+    }
+
+    // create emscripten filesystem entries
+    FS.createPath('/', 'cache', true, true);
+    [].forEach(function(datafile) {
+      FS.createLazyFile('/cache', datafile, 'cache/' + datafile, true, false);
+    });
+
+    // decompress the .HYP file node (idx)
+    function dehyp(filename, idx) {
+        stdoutBuffer = '';
+        Module.callMain(['cache/'+filename, ''+idx]);
+        var s = stdoutBuffer;
+
+        console.log('dehyp', idx);
+        s = s.replace(/<!--(\/?a.*?)-->/g, '<$1>');
+        s = s.replace(/<!--\/?refs.*?"(.*?)"-->/g, function(m, refs) {
+            // update the menu icon indexes
+            refs.split(/&/).map(function(arg) {
+                var name_value = arg.split(/=/);
+                document.getElementById('ref_'+name_value[0]).href = "#index=" + name_value[1];
+            });
+            return '';
+        });
+        s = s.replace(/<a\s+href="(.*?)"/g, '<a href="#$1"');
+        // s = s.replace(/<!--(.*?)-->/g, '<$1>');
+        document.getElementById('output').innerHTML = s;
+        return s;
+    }
+
+    // link navigation
+    window.onhashchange = function(e) {
+        var index = e.newURL.match(/index=(\d+)/)[1];
+        dehyp(hypfile, index);
+    };
+  </script>
+</head>
+<body>
+  <div class="menuDiv">
+      <form action="" method="GET">
+        <a id="ref_back" href="javascript: history.go(-1)"><div class="icon"></div></a>
+        <a id="ref_prev" href="#index=0" accesskey="p" rel="prev"><div class="icon"></div></a>
+
+        <a id="ref_toc"  href="#index=0" accesskey="t" rel="contents"><div class="icon"></div></a>
+        <a id="ref_next" href="#index=0" accesskey="n" rel="next"><div class="icon"></div></a>
+        <a id="ref_idx"  href="#index=0" accesskey="z" rel="index"><div class="icon"></div></a>
+        &nbsp;&nbsp;&nbsp;
+        <!--
+        <a href="../libhyp" accesskey="o"><img src="image/iload.png" border="0"/></a>
+        -->
+        <input id="ref_file" type="file" multiple onchange="handle_files(this.files)">
+
+        <!--
+        &nbsp;&nbsp;&nbsp;
+        <input class="search" accesskey="s" type="text" name="q" width="10" value="$form{q}"/>
+        -->
+      </form>
+  </div>
+  <pre id="output"></pre>
+</body>
+</html>
+
