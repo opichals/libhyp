@@ -41,9 +41,36 @@ function effects($e) {
 	return $eff+"<!--ef "+$e+"-->";
 }
 
+// make <a> links valid to our location
+function emitLink(href, text) {
+	// get the line number and remove from the link
+    let line = 1;
+	href = href.replace(/\&line=([-\d]\d*)/g, (m, l) => (line = parseInt(l, 10), ''));
+
+	// // extern links
+	// if ( $href =~ s|extern=([^\\/]+)[\\/]?(.*)||g ) {
+	// 	my ($hyp, $node ) = ($1, $2);
+	// 	$au{node} = uri_escape($node);
+
+	// 	# in case we are in an archive then set mask rather then URL
+	// 	if ( $au{mask} ) {
+	// 		$au{mask} = $hyp;
+	// 	} else {
+	// 		$url =~ s![^/]+$!$hyp!;
+	// 	}
+	// }
+
+    if ( line > 1 ) href += `&line=${line}#line${line}`;
+    if ( href ) href = `&${href}`;
+
+	return `<a href="#${href}">${text}</a>`;
+}
+
 const $images = '';
 
 function htmllify($Lines) {
+$Lines = $Lines.replace(/<!--a href="(.*?)"-->(.*?)<!--\/a-->/gm, (m, href, text) => emitLink(href,text));
+
 // effects
 $Lines = $Lines.replace(/<!--ef (0x[0-9a-fA-F][0-9a-fA-F])-->/gm, (m, eff) => effects(parseInt(eff, 16)));
 

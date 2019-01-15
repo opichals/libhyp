@@ -89,7 +89,7 @@
         var s = stdoutBuffer;
 
         console.log('dehyp', idx);
-        s = s.replace(/<!--(\/?a.*?)-->/g, '<$1>');
+        // s = s.replace(/<!--(\/?a.*?)-->/g, '<$1>');
         s = s.replace(/<!--\/?refs.*?"(.*?)"-->/g, function(m, refs) {
             // update the menu icon indexes
             refs.split(/&/).map(function(arg) {
@@ -98,7 +98,7 @@
             });
             return '';
         });
-        s = s.replace(/<a\s+href="(.*?)"/g, '<a href="#$1"');
+        // s = s.replace(/<a\s+href="(.*?)"/g, '<a href="#$1"');
         // s = s.replace(/<!--(.*?)-->/g, '<$1>');
         document.getElementById('output').innerHTML = htmllify(s);
         return s;
