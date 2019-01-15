@@ -48,6 +48,7 @@
   </script>
 
   <script type="text/javascript" src="dehyp.js"></script>
+  <script type="text/javascript" src="hypview.js"></script>
 
   <script type="text/javascript">
     var hypfile = 'tos.hyp';
@@ -99,7 +100,7 @@
         });
         s = s.replace(/<a\s+href="(.*?)"/g, '<a href="#$1"');
         // s = s.replace(/<!--(.*?)-->/g, '<$1>');
-        document.getElementById('output').innerHTML = s;
+        document.getElementById('output').innerHTML = htmllify(s);
         return s;
     }
 
@@ -131,7 +132,27 @@
         -->
       </form>
   </div>
-  <pre id="output"></pre>
+
+  <div class="svgDiv">
+      <!-- TODO: update the width/height of the SVG -->
+      <svg:svg version="1.1" baseProfile="tiny" width="10ex" height="10em">
+          <svg:defs>
+              <svg:marker id="arrowbeg" viewBox="0 0 10 20" refX="2" refY="10" markerUnits="strokeWidth" markerWidth="15" markerHeight="15" orient="auto">
+                  <svg:path d="M 0 10 L 10 0 M 0 10 L 10 20" fill="black" stroke="black"/>
+              </svg:marker>
+              <svg:marker id="arrowend" viewBox="0 0 10 20" refX="8" refY="10" markerUnits="strokeWidth" markerWidth="15" markerHeight="15" orient="auto">
+                  <svg:path d="M 10 10 L 0 0 M 10 10 L 0 20" fill="black" stroke="black"/>
+              </svg:marker>
+          </svg:defs>
+          <svg:g stroke="black">
+              <!-- TODO: generated graphics -->
+          </svg:g>
+      </svg:svg>
+  </div>
+
+      <pre id="output"></pre>
+  <div class="content">
+  </div>
 </body>
 </html>
 
