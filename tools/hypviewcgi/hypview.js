@@ -81,25 +81,8 @@ function insertImages(lines) {
 	return $images;
 }
 
-// the following needs to be somehow calibrated (the values are
-// just empirical from OS X browser versions (default font settings)
-let ex = 0; // $form.ex;
-if ( ex == 0 ) {
-	ex = 1; //# Safari
-	ex = 1.077; //# Firefox
-	ex = 1.085; //# Chrome OSX
-}
-let em = 0; // $form.em;
-if ( em == 0 ) {
-	em = 0.9376; $svgpos = -2;  //# Safari
-	em = 0.8124; $svgpos = -4; //# Opera
-	em = 0.875; $svgpos = -4; //# Firefox 3.x
-	em = 0.935; $svgpos = -4; //# Chrome OSX
-}
-// $form{ex} = 1; $form{em} = 1; $svgpos = 0;
-
-
 let graphs;
+
 function constructGraphics(graphics) {
     let $offset = 0;
 
@@ -121,7 +104,7 @@ function constructGraphics(graphics) {
 				gr.ytextoffset += gr.yoffset - $offset;
 
                 gr.height = parseInt(gr.height, 10);
-				let $count = (gr.height+15)/16;
+				let $count = Math.round((gr.height+15)/16)-1;
 				$offset += $count + 1;
 			}
 
@@ -129,8 +112,8 @@ function constructGraphics(graphics) {
 		} else if ( gr.cmd === "box" ) {
             gr.pattern = parseInt(gr.pattern, 10);
 
-			g  = `  <rect x="${gr.xoffset*ex}ex" y="${gr.yoffset*em+1}em"`;
-			g += ` width="${gr.width*ex}ex" height="${gr.height*em}em" style="`;
+			g  = `  <rect x="${gr.xoffset}" y="${gr.yoffset}"`;
+			g += ` width="${gr.width}" height="${gr.height}" style="`;
 			if ( gr.pattern == 8 ) {
 				g += "fill:rgb(0,0,0);\"";
 			} else if ( gr.pattern != 0 ) {
@@ -140,9 +123,10 @@ function constructGraphics(graphics) {
 				g += "fill:none;\"";
 			}
 			if ( gr.rbox != 0 ) {
-				g += ` rx="${(gr.width+gr.height)/2}"`;
+				g += ` rx="${Math.min(gr.width, gr.height)/8}"`;
 			}
-			graphs.push(`${g}></rect>\n`);
+			gr.svg = `${g}/>`;
+			graphs.push(gr.svg);
 
 			gr.width = gr.xoffset+gr.width;
 			gr.height = gr.yoffset+gr.height;
@@ -154,20 +138,20 @@ function constructGraphics(graphics) {
             gr.style = parseInt(gr.style, 10);
             gr.attribs = parseInt(gr.attribs, 10);
 
-			g  = `  <line x1="${gr.xoffset*ex}ex" y1="${gr.yoffset*em+1}em"`;
-			g += ` x2="${gr.xoffset+gr.xlength*ex}ex" y2="${(gr.yoffset+gr.ylength)*em+1}em"`;
+			g  = `  <line x1="${gr.xoffset}" y1="${gr.yoffset}"`;
+			g += ` x2="${(gr.xoffset+gr.xlength)}" y2="${(gr.yoffset+gr.ylength)}"`;
 			if ( gr.style == 2 ) {
-				g += " stroke-dasharray=\"8,2\"";
+				g += " stroke-dasharray=\"0.8,0.2\"";
 			} else if ( gr.style == 3 ) {
-				g += " stroke-dasharray=\"2,5\"";
+				g += " stroke-dasharray=\"0.2,0.5\"";
 			} else if ( gr.style == 4 ) {
-				g += " stroke-dasharray=\"6,1,1,1\"";
+				g += " stroke-dasharray=\"0.6,0.1,0.1,0.1\"";
 			} else if ( gr.style == 5 ) {
-				g += " stroke-dasharray=\"6,6\"";
+				g += " stroke-dasharray=\"0.6,0.6\"";
 			} else if ( gr.style == 6 ) {
-				g += " stroke-dasharray=\"3,1,2,1,2,1,3,1\"";
+				g += " stroke-dasharray=\"0.3,0.1,0.2,0.1,0.2,0.1,0.3,0.1\"";
 			} else if ( gr.style == 7 ) {
-				g += " stroke-dasharray=\"1,1\"";
+				g += " stroke-dasharray=\"0.1,0.1\"";
 			}
 			if ( gr.attribs & 1 ) {
 				g += ' marker-start="url(#arrowbeg)"';
@@ -175,7 +159,8 @@ function constructGraphics(graphics) {
 			if ( gr.attribs & 2 ) {
 				g += ' marker-end="url(#arrowend)"';
 			}
-			graphs.push(`${g}></line>\n`);
+			gr.svg = `${g}/>`;
+			graphs.push(gr.svg);
 
 			gr.width = gr.xoffset + (gr.xlength<0 ? 0 : gr.xlength);
 			gr.height = gr.yoffset + (gr.ylength<0 ? 0 : gr.ylength);
@@ -232,6 +217,7 @@ for(let i=0; i<lines.length; i++) {
 // 	splice lines,$begidx+$form{line}-1,0,"<a name=\"line$form{line}\"/>";
 // }
 
+len = lines.length;
 $max = {};
 graphs = [];
 limg_args = [];
@@ -263,10 +249,20 @@ $Lines = $Lines.replace(/\xbf/g, '&trade;');
 // strip and non XML characters
 // $Lines =~ s|([\x0-\x9\xb\xc\xd-\x1f])|?|gm;
 
-document.getElementById('svg').setAttribute('width', ($max.width*ex+1)+'ex');
-document.getElementById('svg').setAttribute('height', ($max.height*em+1)+'em');
+document.getElementById('svg').setAttribute('viewBox', '0 0 74 '+($Lines.match(/\n/g).length));
 
-document.getElementById('graphics').innerHTML = graphs;
+document.getElementById('graphics').style.visibility = "hidden";
+document.getElementById('graphics').innerHTML = graphs.join('');
+
+// measure the content length
+setTimeout(function() {
+    let w = document.getElementById('width').getBoundingClientRect().width - 1;
+    document.getElementById('svg').setAttribute('width', w);
+    let h = document.getElementById('output').getBoundingClientRect().height;
+    document.getElementById('svg').setAttribute('height', h);
+
+    document.getElementById('graphics').style.visibility = "visible";
+}, 0);
 
 return $Lines;
 }

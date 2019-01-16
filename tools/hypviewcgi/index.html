@@ -7,12 +7,12 @@
     .body { margin-top:0px; margin-left:2ex; }
      .menuDiv { position:relative; top:0em; width:78ex; height: 24px; z-index:999; }
       .search { position:relative; top:-6px; }
-     .outerDiv { position:relative; top:-1ex; height:100%; width:100% }
+     .outerDiv { position:relative; top:1ex; height:100%; width:100% }
       .svgDiv   { position:absolute; top:0em; left:-1ex; z-index:997; }
       .imgDiv   { position:absolute; top:0em; }
       .imgCenter{ position:absolute; top:0em; text-align:center; margin:0 auto; width:78ex; }
       .content  { position:absolute; top:0em; left:0ex; z-index:998; }
-      .content > div > pre  { margin:0 }
+      pre { margin:0 }
       .icon {
         width: 32px;
         height: 24px;
@@ -132,8 +132,9 @@
   </div>
 
   <div class="outerDiv">
+      <span id="width" style="font-family: monospace; visibility: hidden">12345678901234567890123456789012345678901234567890123456789012345678901234</span>
       <div id="svgDiv" class="svgDiv">
-          <svg id="svg" version="1.1" baseProfile="tiny" width="10ex" height="10em" xmlns="http://www.w3.org/2000/svg">
+          <svg id="svg" version="1.1" baseProfile="tiny" width="74ex" height="100em" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
               <defs>
                   <marker id="arrowbeg" viewBox="0 0 10 20" refX="2" refY="10" markerUnits="strokeWidth" markerWidth="15" markerHeight="15" orient="auto">
                       <path d="M 0 10 L 10 0 M 0 10 L 10 20" fill="black" stroke="black"/>
@@ -142,8 +143,8 @@
                       <path d="M 10 10 L 0 0 M 10 10 L 0 20" fill="black" stroke="black"/>
                   </marker>
               </defs>
-              <g stroke="black" id="graphics">
                   <!-- generated graphics -->
+              <g stroke="black" stroke-width="0.05" id="graphics">
               </g>
           </svg>
       </div>
