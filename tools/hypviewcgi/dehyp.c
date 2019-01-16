@@ -40,7 +40,7 @@ int emit_image( HYP *hyp, int index )
 	if ( img ) {
 #ifdef __EMSCRIPTEN__
 		/* the fdopen below doesn't do proper binary encoding in emscripten */
-		FILE *fp = fopen("/root/xxx.png", "wb");
+		FILE *fp = fopen("dehyp.png", "wb");
 #else
 		/* stdout in binary mode */
 		FILE *fp = fdopen(fileno(stdout), "wb");

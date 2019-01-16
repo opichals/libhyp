@@ -34,43 +34,66 @@
     }
   </style>
 
-  <script type="text/javascript">
-    var stdout = [''];
-    var Module = {
-        preRun: function() {
-            function stdoutHandler(code) {
-                stdout[stdout.length-1] += String.fromCharCode(code);
-                if (code == '\n'.charCodeAt(0)) {
-                    stdout.push('');
-                }
-            }
-
-            FS.init(null, stdoutHandler, null);
-        }
-    };
-  </script>
-
   <script type="text/javascript" src="dehyp.js"></script>
   <script type="text/javascript" src="hypview.js"></script>
 
   <script type="text/javascript">
     var hypfile = 'tos.hyp';
 
+    var stdout = [''];
+    Module.preRun = function() {
+        function stdoutHandler(code) {
+            stdout[stdout.length-1] += String.fromCharCode(code);
+            if (code == '\n'.charCodeAt(0)) {
+                stdout.push('');
+            }
+        }
+
+        FS.init(null, stdoutHandler, null);
+    };
+
+    // decompress the .HYP file node (idx)
+    function dehyp(filename, idx, isImage) {
+        stdout = [''];
+        Module.callMain([filename, ''+idx]);
+        console.log('dehyp', idx);
+
+        if (isImage) {
+            let pngRawData = FS.readFile('dehyp.png', { encoding: 'binary' });
+            var blob = new Blob( [ pngRawData ], { type: "image/png" } );
+            return URL.createObjectURL( blob );
+        }
+        return stdout;
+    }
+
+    function hypview(filename, idx) {
+        var lines = dehyp(filename, idx);
+        hypfile = filename;
+
+        lines.join('').replace(/<!--\/?refs.*?"(.*?)"-->/g, function(m, refs) {
+            // update the menu icon indexes
+            refs.split(/&/).map(function(arg) {
+                var name_value = arg.split(/=/);
+                document.getElementById('ref_'+name_value[0]).href = "#index=" + name_value[1];
+            });
+            return '';
+        });
+
+        document.getElementById('output').innerHTML = htmllify(lines);
+    }
+
     // FileReader (allows local file access)
     function handle_files(files) {
         for (i = 0; i < files.length; i++) {
             var file = files[i];
-            console.log('File: ', file);
             var reader = new FileReader();
             ret = [];
             reader.onload = function(e) {
-                console.log('Done: ', e);
-
                 // create emscripten filesystem file entry
-                FS.createDataFile('/cache', file.name, e.target.result, true, false);
+                FS.createDataFile('/', file.name, e.target.result, true, false);
                 hypfile = file.name;
 
-                dehyp(hypfile, 0);
+                hypview(hypfile, 0);
             };
             reader.onerror = function(stuff) {
                 console.log("error", stuff, stuff.toString(), stuff.getMessage && stuff.getMessage());
@@ -79,33 +102,10 @@
         }
     }
 
-    // create emscripten filesystem entries
-    FS.createPath('/', 'cache', true, true);
-    [].forEach(function(datafile) {
-      FS.createLazyFile('/cache', datafile, 'cache/' + datafile, true, false);
-    });
-
-    // decompress the .HYP file node (idx)
-    function dehyp(filename, idx) {
-        stdout = [''];
-        Module.callMain(['cache/'+filename, ''+idx]);
-
-        console.log('dehyp', idx);
-        stdout.join('').replace(/<!--\/?refs.*?"(.*?)"-->/g, function(m, refs) {
-            // update the menu icon indexes
-            refs.split(/&/).map(function(arg) {
-                var name_value = arg.split(/=/);
-                document.getElementById('ref_'+name_value[0]).href = "#index=" + name_value[1];
-            });
-            return '';
-        });
-        document.getElementById('output').innerHTML = htmllify(stdout);
-    }
-
     // link navigation
     window.onhashchange = function(e) {
         var index = e.newURL.match(/index=(\d+)/)[1];
-        dehyp(hypfile, index);
+        hypview(hypfile, index);
     };
   </script>
 </head>

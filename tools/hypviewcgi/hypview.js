@@ -42,6 +42,7 @@ function effects($e) {
 }
 
 
+var hypfile;
 let $max = {};
 let limg_args;
 let $begidx;
@@ -269,6 +270,4 @@ document.getElementById('graphics').innerHTML = graphs;
 
 return $Lines;
 }
-
-
 
