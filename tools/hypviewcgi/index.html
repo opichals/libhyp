@@ -43,7 +43,7 @@
     var stdout = [''];
     Module.preRun = function() {
         function stdoutHandler(code) {
-            stdout[stdout.length-1] += String.fromCharCode(code);
+            stdout[stdout.length-1] += String.fromCharCode(code>=0?code:256+code);
             if (code == '\n'.charCodeAt(0)) {
                 stdout.push('');
             }
