@@ -30,9 +30,11 @@
 
 #include <libhyp.h>
 
+/* from tools.c */
+void emit_quoted( const char *s );
+
 /* from emitpng.c */
 char emit_image_png(FILE *fp, HYP_IMAGE_DATA *img);
-
 
 int emit_image( HYP *hyp, int index )
 {
@@ -54,26 +56,6 @@ int emit_image( HYP *hyp, int index )
 	return 10;
 }
 
-
-void emit_quoted( char *s )
-{
-	char *t;
-	while( (t = (char*)strpbrk( s, "<>&\'\"" )) ) {
-		char c = *t;
-		*t = '\0';
-		printf( "%s", s );
-		switch ( c ) {
-			case '<': printf( "&lt;" ); break;
-			case '>': printf( "&gt;" ); break;
-			case '&': printf( "&amp;" ); break;
-			case '\'': printf( "&apos;" ); break;
-			case '\"': printf( "&quot;" ); break;
-		}
-		*t = c;
-		s = t+1;
-	}
-	printf( "%s", s );
-}
 
 int emit_node( HYP *hyp, int index )
 {

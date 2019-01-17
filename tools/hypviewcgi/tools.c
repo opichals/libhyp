@@ -15,27 +15,28 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
- * $Id$
  */
 
-#include <libhyp.h>
+#include <stdio.h>
+#include <string.h> /* strpbrk */
 
-/* from grep.c */
-void grep( HYP *hyp, const char *q );
 
-int main( int argc, char *argv[] )
+void emit_quoted( const char *s )
 {
-	/* quit with error if no arguments */
-	if (argc < 2)
-		return 1;
-
-	HYP *hyp = hyp_load( argv[1] );
-	if ( hyp ) {
-		if ( argc > 2 ) {
-            grep( hyp, argv[2] );
+	char *t;
+	while( (t = (char*)strpbrk( s, "<>&\'\"" )) ) {
+		char c = *t;
+		*t = '\0';
+		printf( "%s", s );
+		switch ( c ) {
+			case '<': printf( "&lt;" ); break;
+			case '>': printf( "&gt;" ); break;
+			case '&': printf( "&amp;" ); break;
+			case '\'': printf( "&apos;" ); break;
+			case '\"': printf( "&quot;" ); break;
 		}
-		hyp_free( hyp );
+		*t = c;
+		s = t+1;
 	}
+	printf( "%s", s );
 }
-
