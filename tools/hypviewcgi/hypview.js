@@ -123,7 +123,7 @@ function constructGraphics(graphics) {
 				g += "fill:none;\"";
 			}
 			if ( gr.rbox != 0 ) {
-				g += ` rx="${Math.min(gr.width, gr.height)/8}"`;
+				g += ` rx="${Math.min(gr.width, gr.height)/4}" ry="${Math.min(gr.width, gr.height)/8}"`;
 			}
 			gr.svg = `${g}/>`;
 			graphs.push(gr.svg);
