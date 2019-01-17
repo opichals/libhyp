@@ -42,6 +42,7 @@ function effects($e) {
 }
 
 
+const MAX_WIDTH = 74;
 var hypfile;
 let $max = {};
 let limg_args;
@@ -58,7 +59,7 @@ function insertImages(lines) {
 			$images += `<div class="imgCenter" style="z-index:${z};"><div><pre>`;
 		} else {
 			// xoffset positioned image
-			$images += `<div class="imgDiv" style="left:${Math.round(args.xoffset*1.35)}ex; z-index:${z};"><div><pre>`;
+			$images += `<div class="imgDiv" style="left:${Math.round((hyp_width/MAX_WIDTH)*(args.xoffset-1))}; z-index:${z};"><div><pre>`;
 		}
 
 		// yoffset number of newlines
@@ -67,9 +68,9 @@ function insertImages(lines) {
 
 		// @limage additional newlines
 		if ( args.type === "limage" ) {
-			let $count = ((args.height+15)/16) - 1;
+			let $count = Math.round((args.height+15)/16);
 			let $limgnl = "";
-			while ( $count-- >= -1 ) { $limgnl += "\n"; }
+			while ( $count-- > 0 ) { $limgnl += "\n"; }
 			lines.splice($begidx+args.ytextoffset,0,$limgnl); $begidx += 1;
 		}
 
@@ -104,8 +105,7 @@ function constructGraphics(graphics) {
 				gr.ytextoffset += gr.yoffset - $offset;
 
                 gr.height = parseInt(gr.height, 10);
-				let $count = Math.round((gr.height+15)/16)-1;
-				$offset += $count + 1;
+				$offset += Math.round((gr.height+15)/16);
 			}
 
 			limg_args.push(gr);
@@ -235,7 +235,6 @@ $Lines = $Lines.replace(/<!--ef (0x[0-9a-fA-F][0-9a-fA-F])-->/gm, (m, eff) => ef
 $Lines = $Lines.replace(/<!--content-->\n/m, $images);
 $Lines = $Lines.replace(/<!--\/content-->\n/m, () => effects(0)); // close all effect tags
 
-console.log($Lines);
 // HTML links (it is worth it in HTML browser ;)
 $Lines = $Lines.replace(/(\s)((https?\|ftp):\/[^;:,\)\]\}\"\'<>\n]+)[\.\s]?/g, '$1<a href="$2">$2</a>');
 $Lines = $Lines.replace(/(\s)([a-z]+[a-z0-9.\-_]+\@[a-z0-9.\-_]*[a-z])([;:,\.\]\)\}\"\'<>]*\s)/gim, '$1<a href="mailto:$2">$2</a>$3');
@@ -249,13 +248,13 @@ $Lines = $Lines.replace(/\xbf/g, '&trade;');
 // strip and non XML characters
 // $Lines =~ s|([\x0-\x9\xb\xc\xd-\x1f])|?|gm;
 
-document.getElementById('svg').setAttribute('viewBox', '0 0 74 '+($Lines.match(/\n/g).length));
-
 document.getElementById('graphics').style.visibility = "hidden";
 document.getElementById('graphics').innerHTML = graphs.join('');
 
 // measure the content length
 setTimeout(function() {
+    document.getElementById('svg').setAttribute('viewBox', `0 0 ${MAX_WIDTH} ${$Lines.match(/\n/g).length}`);
+
     let w = document.getElementById('width').getBoundingClientRect().width - 1;
     document.getElementById('svg').setAttribute('width', w);
     let h = document.getElementById('output').getBoundingClientRect().height;
