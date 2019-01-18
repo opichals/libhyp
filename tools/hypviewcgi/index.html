@@ -6,13 +6,14 @@
   </title>
   <style type="text/css">
     .body { margin-top:0px; margin-left:2ex; }
-     .menuDiv { position:relative; top:0em; width:78ex; height: 24px; z-index:999; }
+     .menu { position:fixed; background-color:#ffffff; padding-top: 2px; top:0em; width:78ex; height: 26px; z-index:999; }
       .search { position:relative; top:-6px; }
-     .outerDiv { position:relative; top:1ex; height:100%; width:100% }
-      .svgDiv   { position:absolute; top:0em; left:-1ex; z-index:997; }
-      .imgDiv   { position:absolute; top:0em; }
-      .imgCenter{ position:absolute; top:0em; text-align:center; margin:0 auto; width:78ex; }
-      .content  { position:absolute; top:0em; left:0ex; z-index:998; }
+     .node { position:relative; margin-top:32px; height:100%; width:100% }
+     .anchor {                  padding-top:32px; margin-top:-32px; }
+      .gfx { position:absolute; top:0em; left:-1ex; z-index:997; }
+      .txt { position:absolute; top:0em; left:0ex; z-index:998; }
+      .img { position:absolute; top:0em; }
+      .imgCenter { position:absolute; top:0em; text-align:center; margin:0 auto; width:78ex; }
       pre { margin:0 }
       .icon {
         width: 32px;
@@ -67,7 +68,7 @@
         return stdout;
     }
 
-    function hypview(filename, idx) {
+    function hypview(filename, idx, lineNumber) {
         var lines = dehyp(filename, idx);
         hypfile = filename;
 
@@ -80,7 +81,10 @@
             return '';
         });
 
-        document.getElementById('output').innerHTML = htmllify(lines);
+        document.getElementById('output').innerHTML = htmllify(lines, lineNumber);
+
+        let anchor = document.getElementsByName('line'+lineNumber);
+        anchor && anchor[0] && anchor[0].scrollIntoView();
     }
 
     // FileReader (allows local file access)
@@ -94,7 +98,7 @@
                 FS.createDataFile('/', file.name, e.target.result, true, false);
                 hypfile = file.name;
 
-                hypview(hypfile, 0);
+                hypview(hypfile, 0, 0);
             };
             reader.onerror = function(stuff) {
                 console.log("error", stuff, stuff.toString(), stuff.getMessage && stuff.getMessage());
@@ -105,13 +109,14 @@
 
     // link navigation
     window.onhashchange = function(e) {
-        var index = e.newURL.match(/index=(\d+)/)[1];
-        hypview(hypfile, index);
+        var index = e.newURL.match(/index=(\d+)/);
+        var lineNumber = e.newURL.match(/line=(\d+)/);
+        hypview(hypfile, index && index[1], lineNumber && lineNumber[1]);
     };
   </script>
 </head>
 <body>
-  <div class="menuDiv">
+  <div class="menu">
       <form action="" method="GET">
         <a id="ref_back" href="javascript: history.go(-1)"><div class="icon"></div></a>
         <a id="ref_prev" href="#index=0" accesskey="p" rel="prev"><div class="icon"></div></a>
@@ -132,9 +137,9 @@
       </form>
   </div>
 
-  <div class="outerDiv">
+  <div class="node">
       <span id="width" style="font-family: monospace; visibility: hidden">12345678901234567890123456789012345678901234567890123456789012345678901234</span>
-      <div id="svgDiv" class="svgDiv">
+      <div class="gfx">
           <svg id="svg" version="1.1" baseProfile="tiny" width="74ex" height="100em" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
               <defs>
                   <marker id="arrowbeg" viewBox="0 0 10 20" refX="2" refY="10" markerUnits="strokeWidth" markerWidth="15" markerHeight="15" orient="auto">
@@ -150,7 +155,7 @@
           </svg>
       </div>
 
-      <div class="content">
+      <div class="txt">
           <pre id="output"></pre>
       </div>
   </div>

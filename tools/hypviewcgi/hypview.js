@@ -59,7 +59,7 @@ function insertImages(lines) {
 			$images += `<div class="imgCenter" style="z-index:${z};"><div><pre>`;
 		} else {
 			// xoffset positioned image
-			$images += `<div class="imgDiv" style="left:${Math.round((hyp_width/MAX_WIDTH)*(args.xoffset-1))}; z-index:${z};"><div><pre>`;
+			$images += `<div class="img" style="left:${Math.round((hyp_width/MAX_WIDTH)*(args.xoffset-1))}; z-index:${z};"><div><pre>`;
 		}
 
 		// yoffset number of newlines
@@ -190,12 +190,11 @@ function emitLink(href, text) {
 	// }
 
     if ( line > 1 ) href += `&line=${line}#line${line}`;
-    if ( href ) href = `&${href}`;
 
 	return `<a href="#${href}">${text}</a>`;
 }
 
-function htmllify(lines) {
+function htmllify(lines, lineNumber) {
 
 $begidx = 1;
 
@@ -212,10 +211,11 @@ for(let i=0; i<lines.length; i++) {
 	$begidx++;
 }
 
-// # generate the line anchor if required
-// if ( $form{line} ) {
-// 	splice lines,$begidx+$form{line}-1,0,"<a name=\"line$form{line}\"/>";
-// }
+// generate the line anchor if required
+if ( lineNumber ) {
+    lineNumber = parseInt(lineNumber, 10);
+    lines.splice($begidx+lineNumber-1,0,`<a name="line${lineNumber}" class="anchor"/>`);
+}
 
 len = lines.length;
 $max = {};
