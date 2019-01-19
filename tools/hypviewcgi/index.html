@@ -52,7 +52,27 @@
         }
 
         FS.init(null, stdoutHandler, null);
+
+        fetchUrl();
     };
+
+    function fetchUrl() {
+        let search = location.search.substring(1);
+        let args = search.split('&').reduce((_args, arg) => {
+            let pair = arg.split(/=/);
+            return { ..._args, [pair[0]]: pair[1] };
+        }, {});
+
+        fetch('https://humanly.herokuapp.com/cors/'+args.url)
+        .then(r => r.arrayBuffer())
+        .then(buffer => {
+            let filename = args.url.split('/').pop();
+            FS.createDataFile('/', filename, new Uint8Array(buffer), true, false);
+            hypfile = filename;
+
+            open();
+        });
+    }
 
     // decompress the .HYP file node (idx)
     function dehyp(filename, idx, isImage) {
@@ -107,12 +127,14 @@
         }
     }
 
-    // link navigation
-    window.onhashchange = function(e) {
-        var index = e.newURL.match(/index=(\d+)/);
-        var lineNumber = e.newURL.match(/line=(\d+)/);
+    function open() {
+        var index = location.hash.match(/index=(\d+)/);
+        var lineNumber = location.hash.match(/line=(\d+)/);
         hypview(hypfile, index && index[1], lineNumber && lineNumber[1]);
-    };
+    }
+
+    // link navigation
+    window.onhashchange = open;
   </script>
 </head>
 <body>
