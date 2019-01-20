@@ -202,8 +202,11 @@ $begidx = 1;
 let graphics = [];
 for(let i=0; i<lines.length; i++) {
     let $l = lines[i];
-    if ( $l.match(/<!--title "(.*?)"-->/) ) {
-        // FIXME $header = "\n<title>$1 - $form{url}</title>\n";
+
+    let title = $l.match(/<!--title "(.*?)"-->/);
+    if (title) {
+        const $header = `${title[1]} - hypview: ${hypfile}`;
+        document.title = $header; // TODO: cleanup
     }
 	if ( $l.match(/<!--content-->/) ) { break; }
 
