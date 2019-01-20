@@ -60,8 +60,10 @@
         let search = location.search.substring(1);
         let args = search.split('&').reduce((_args, arg) => {
             let pair = arg.split(/=/);
-            return { ..._args, [pair[0]]: pair[1] };
+            return { ..._args, [pair[0]]: decodeURIComponent(pair[1]) };
         }, {});
+
+        if (!args.url) return;
 
         fetch('https://humanly.herokuapp.com/cors/'+args.url)
         .then(r => r.arrayBuffer())
