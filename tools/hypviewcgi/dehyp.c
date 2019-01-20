@@ -32,7 +32,8 @@
 
 /* from tools.c */
 void emit_quoted( const char *s );
-
+/* from grep.c */
+void grep( HYP *hyp, const char *q );
 /* from emitpng.c */
 char emit_image_png(FILE *fp, HYP_IMAGE_DATA *img);
 
@@ -169,6 +170,13 @@ int main( int argc, char *argv[] )
 			for ( index = 0; index < hyp->header.entry_count; index++ ) {
 				if ( ! strcmp( &(argv[2])[5], hyp->index_table[ index ].name) ) break;
 			}
+		}
+
+		if ( index == 0 && argc > 2 && ! strncmp( argv[2], "search:", 7) && (argv[2])[7] != '\0' ) {
+			grep( hyp, &(argv[2])[7] );
+
+			hyp_free( hyp );
+			return res;
 		}
 
 		/* show the first node when out of bounds */

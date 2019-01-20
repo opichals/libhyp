@@ -17,7 +17,7 @@ all: $(TARGET)
 CFLAGS = $(OPTS) -I$(top_srcdir)/include $(CROSS_CFLAGS)
 
 # engine binary objects
-DEHYP_OBJS = dehyp.o emitpng.o tools.o
+DEHYP_OBJS = dehyp.o emitpng.o grep.o tools.o
 GREPHYP_OBJS = grephyp.o grep.o tools.o
 
 dehyp.o: $(top_srcdir)/include/libhyp.h
