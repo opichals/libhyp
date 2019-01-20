@@ -60,7 +60,7 @@ int search_node( HYP *hyp, int index, const char *s )
 		while ( item ) {
 			/* if the line is complete */
 			if ( t && t[ tlen - 1 ] == '\n' ) {
-				if ( strcasecmp( ln, s) ) {
+				if ( strcasestr( ln, s) ) {
 					char lnum[10];
 					sprintf( lnum, "%5d: ", line);
 

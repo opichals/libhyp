@@ -29,7 +29,7 @@ DISTDIR = $(TARGETDIR)/libhyp-$(VERSION)
 
 # general compilation and optimalization options (CFLAGS)
 # OPTS   = -O2 -fomit-frame-pointer -I/usr/local/include
-OPTS   = -O0 -g -I/usr/local/include
+OPTS   = -O0 -g -I/usr/local/include -D_GNU_SOURCE
 
 
 # library folders for tools
