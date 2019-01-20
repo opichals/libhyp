@@ -254,18 +254,6 @@ $Lines = $Lines.replace(/\xbf/g, '&trade;');
 document.getElementById('graphics').style.visibility = "hidden";
 document.getElementById('graphics').innerHTML = graphs.join('');
 
-// measure the content length
-setTimeout(function() {
-    document.getElementById('svg').setAttribute('viewBox', `0 0 ${MAX_WIDTH} ${$Lines.match(/\n/g).length}`);
-
-    let w = document.getElementById('width').getBoundingClientRect().width - 1;
-    document.getElementById('svg').setAttribute('width', w);
-    let h = document.getElementById('output').getBoundingClientRect().height;
-    document.getElementById('svg').setAttribute('height', h);
-
-    document.getElementById('graphics').style.visibility = "visible";
-}, 0);
-
 return $Lines;
 }
 

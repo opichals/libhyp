@@ -115,6 +115,18 @@
         return stdout;
     }
 
+    function resize() {
+        const html = document.getElementById('output').innerHTML;
+        document.getElementById('svg').setAttribute('viewBox', `0 0 ${MAX_WIDTH} ${html.match(/\n/g).length}`);
+
+        let w = document.getElementById('width').getBoundingClientRect().width - 1;
+        document.getElementById('svg').setAttribute('width', w);
+        let h = document.getElementById('output').getBoundingClientRect().height;
+        document.getElementById('svg').setAttribute('height', h);
+
+        document.getElementById('graphics').style.visibility = "visible";
+    }
+
     function hypview(filename, idx, lineNumber) {
         var lines = dehyp(filename, idx);
         hypfile = filename;
@@ -129,6 +141,9 @@
         });
 
         document.getElementById('output').innerHTML = htmllify(lines, lineNumber);
+
+        // measure the content length
+        setTimeout(resize, 0);
 
         let anchor = document.getElementsByName('line'+lineNumber);
         anchor && anchor[0] && anchor[0].scrollIntoView();
@@ -174,6 +189,9 @@
         var lineNumber = location.hash.match(/line=(\d+)/);
         hypview(hypfile, index && index[1], lineNumber && lineNumber[1]);
     }
+
+    // resync SVG size
+    window.onresize = resize;
 
     // link navigation
     window.onhashchange = open;
