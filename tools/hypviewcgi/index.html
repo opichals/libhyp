@@ -152,7 +152,6 @@
     // FileReader (allows local file access)
     function handle_file(file) {
         var reader = new FileReader();
-        ret = [];
         reader.onload = function(e) {
             var hyppathname = `/file:/${file.name}`;
             try {
@@ -173,7 +172,6 @@
 
                 hypview(hyppathname, 0, 0);
             });
-
         };
         reader.onerror = function(stuff) {
             console.log("error", stuff, stuff.toString(), stuff.getMessage && stuff.getMessage());
