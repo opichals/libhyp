@@ -171,7 +171,7 @@ function constructGraphics(graphics) {
 }
 
 // make <a> links valid to our location
-function emitLink(href, text) {
+function emitLink(file, href, text) {
 	// get the line number and remove from the link
     let line = 1;
 	href = href.replace(/\&line=([-\d]\d*)/g, (m, l) => (line = parseInt(l, 10), ''));
@@ -191,10 +191,10 @@ function emitLink(href, text) {
 
     if ( line > 1 ) href += `&line=${line}#line${line}`;
 
-	return `<a href="#${href}">${text}</a>`;
+	return `<a href="${file}#${href}">${text}</a>`;
 }
 
-function htmllify(lines, lineNumber) {
+function htmllify(file, lines, lineNumber) {
 
 $begidx = 1;
 
@@ -230,7 +230,7 @@ const $images = insertImages(lines);
 
 $Lines = lines.join('');
 
-$Lines = $Lines.replace(/<!--a href="(.*?)"-->(.*?)<!--\/a-->/gm, (m, href, text) => emitLink(href,text));
+$Lines = $Lines.replace(/<!--a href="(.*?)"-->(.*?)<!--\/a-->/gm, (m, href, text) => emitLink(file,href,text));
 
 // effects
 $Lines = $Lines.replace(/<!--ef (0x[0-9a-fA-F][0-9a-fA-F])-->/gm, (m, eff) => effects(parseInt(eff, 16)));
@@ -239,7 +239,7 @@ $Lines = $Lines.replace(/<!--content-->\n/m, $images);
 $Lines = $Lines.replace(/<!--\/content-->\n/m, () => effects(0)); // close all effect tags
 
 // HTML links (it is worth it in HTML browser ;)
-$Lines = $Lines.replace(/(\s)((https?\|ftp):\/[^;:,\)\]\}\"\'<>\n]+)[\.\s]?/g, '$1<a href="$2">$2</a>');
+$Lines = $Lines.replace(/(\s)((https?|ftp):\/[^;:,\)\]\}\"\'<>\n]+)[\.\s]?/g, '$1<a href="$2">$2</a>');
 $Lines = $Lines.replace(/(\s)([a-z]+[a-z0-9.\-_]+\@[a-z0-9.\-_]*[a-z])([;:,\.\]\)\}\"\'<>]*\s)/gim, '$1<a href="mailto:$2">$2</a>$3');
 
 // strip the remaining unhandled tags

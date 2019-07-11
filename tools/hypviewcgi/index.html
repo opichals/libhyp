@@ -54,8 +54,6 @@
         FS.init(null, stdoutHandler, null);
 
         initIDBFS(function() {
-            console.log(FS.readdir('/file:/'));
-
             fetchUrl();
         });
     };
@@ -89,10 +87,11 @@
             return open();
         }
         if (args.url) {
-            return fetch('https://humanly.herokuapp.com/cors/'+args.url)
+            return fetch('https://hypview.herokuapp.com/cors/'+args.url)
                 .then(r => r.arrayBuffer())
                 .then(buffer => {
                     let filename = args.url.split('/').pop();
+                    console.log(args.url, 'fetched as', filename);
                     FS.createDataFile('/', filename, new Uint8Array(buffer), true, false);
                     hypfile = filename;
 
@@ -117,6 +116,8 @@
 
     function resize() {
         const html = document.getElementById('output').innerHTML;
+        if (!html) return;
+
         document.getElementById('svg').setAttribute('viewBox', `0 0 ${MAX_WIDTH} ${html.match(/\n/g).length}`);
 
         let w = document.getElementById('width').getBoundingClientRect().width - 1;
@@ -127,7 +128,7 @@
         document.getElementById('graphics').style.visibility = "visible";
     }
 
-    function hypview(filename, idx, lineNumber) {
+    function hypview(filename, idx, lineNumber, concat) {
         var lines = dehyp(filename, idx);
         hypfile = filename;
 
@@ -140,7 +141,19 @@
             return '';
         });
 
-        document.getElementById('output').innerHTML = htmllify(lines, lineNumber);
+        // links of only file loaded hyps (?file=xyz.hyp) are locked to a file (not url ones)
+        let file = filename.match(/\/file:\/(.*)/);
+        file = file ? `?file=${file[1]}` : '';
+
+        let html = htmllify(file, lines, lineNumber);
+
+        if (concat !== undefined) {
+            // prepend search results (using e.g. `file:* searchtext`) with HYP file link
+            html = html ? `\n\n<a href="${file}&index=0">--- HYP --- ${filename}</a>\n${html}` : '';
+            html = concat + html;
+        }
+
+        document.getElementById('output').innerHTML = html;
 
         // measure the content length
         setTimeout(resize, 0);
@@ -152,6 +165,7 @@
     // FileReader (allows local file access)
     function handle_file(file) {
         var reader = new FileReader();
+        ret = [];
         reader.onload = function(e) {
             var hyppathname = `/file:/${file.name}`;
             try {
@@ -172,6 +186,7 @@
 
                 hypview(hyppathname, 0, 0);
             });
+
         };
         reader.onerror = function(stuff) {
             console.log("error", stuff, stuff.toString(), stuff.getMessage && stuff.getMessage());
@@ -193,6 +208,26 @@
 
     function grephyp(q) {
         var query = document.getElementById('search').value;
+
+        // search using e.g. `file:* searchtext`) goes through all FS stored files
+        var files = query.match(/^file:(\S+?)\s*(.*)/);
+        if (files) {
+            query = files[2];
+            files = files[1];
+
+            var hyplist = FS.readdir('/file:/')
+                .filter(f => !f.match(/^\.\.*$/))
+                .map(f => `/file:/${f}`);
+
+            var html = '';
+            hyplist.forEach(f => {
+                hypview(f, 'search:'+query, 0, html);
+
+                html = document.getElementById('output').innerHTML;
+            });
+            return;
+        }
+
         hypview(hypfile, 'search:'+query);
     }
 
