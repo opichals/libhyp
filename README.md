@@ -4,6 +4,6 @@ The tools folder contains an example of how to work with the libhyp library. The
 
 In addition to those libhyp usage examples it also provides a set of perl based CGI scripts to allow any web browser view the .HYP files.
 
-*Check out the HYP View Web Service live at http://libhyp.atari.org*
+*Check out the HYPView Web Service live at https://opichals.github.io/hypview/*
 
 ![ST-Guide Logo](http://phoenix.inf.upol.cz/~opichals/aranym/stguide-logo.png)
