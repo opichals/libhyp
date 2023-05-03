@@ -144,7 +144,7 @@
             return open();
         }
         if (args.url) {
-            return fetch('https://hypview.herokuapp.com/cors/'+args.url)
+            return fetch('https://corsproxy.io/?'+encodeURIComponent(args.url))
                 .then(r => r.arrayBuffer())
                 .then(buffer => {
                     let filename = args.url.split('/').pop();
