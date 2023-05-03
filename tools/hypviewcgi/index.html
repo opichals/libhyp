@@ -222,6 +222,20 @@
         anchor && anchor[0] && anchor[0].scrollIntoView();
     }
 
+    // prevent the default 'download' event handler on dragover
+    function drag_file(ev) {
+      ev.preventDefault();
+    }
+    // load the dragged .hyp file
+    function drop_file(ev) {
+      ev.preventDefault();
+      if (ev.dataTransfer.items) {
+        [...ev.dataTransfer.items].forEach((item, i) => {
+            if (item.kind === "file") handle_file(item.getAsFile());
+        });
+      }
+    }
+
     // FileReader (allows local file access)
     function handle_file(file) {
         var reader = new FileReader();
@@ -317,7 +331,7 @@
       </form>
   </div>
 
-  <div class="node">
+  <div class="node" ondrop="drop_file(event);" ondragover="drag_file(event);">
       <span id="width" style="font-family: monospace; visibility: hidden">12345678901234567890123456789012345678901234567890123456789012345678901234</span>
       <div class="gfx">
           <svg id="svg" version="1.1" baseProfile="tiny" width="74ex" height="100em" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
