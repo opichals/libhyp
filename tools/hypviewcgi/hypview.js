@@ -206,7 +206,7 @@ for(let i=0; i<lines.length; i++) {
     let title = $l.match(/<!--title "(.*?)"-->/);
     if (title) {
         const $header = `${title[1]} - hypview: ${hypfile}`;
-        document.title = $header; // TODO: cleanup
+        document.title = $header.replace(/[\x80-\xff]/g, (m) => hypenc[m[0].charCodeAt(0)-128]); // TODO: cleanup
     }
 	if ( $l.match(/<!--content-->/) ) { break; }
 
@@ -247,6 +247,9 @@ $Lines = $Lines.replace(/<!--.*?-->/gm, '');
 
 // xBF -> &trade;
 $Lines = $Lines.replace(/\xbf/g, '&trade;');
+
+// apply character encoding
+$Lines = $Lines.replace(/[\x80-\xff]/g, (m) => hypenc[m[0].charCodeAt(0)-128]);
 
 // strip and non XML characters
 // $Lines =~ s|([\x0-\x9\xb\xc\xd-\x1f])|?|gm;

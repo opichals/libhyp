@@ -62,6 +62,7 @@
   <script type="text/javascript">
     var launchHyp;
     var hypfile = 'tos.hyp';
+    var hypenc = Array(128).fill().map((element, index) => String.fromCharCode(index)).join('');
 
     if ('launchQueue' in window) {
         launchQueue.setConsumer(launchParams => {
@@ -135,6 +136,9 @@
             return { ..._args, [pair[0]]: decodeURIComponent(pair[1]) };
         }, {});
 
+        if (args.enc) {
+            hypenc = args.enc;
+        }
         if (args.file) {
             hypfile = `/file:/${args.file}`;
             return open();
@@ -196,13 +200,16 @@
 
         // links of only file loaded hyps (?file=xyz.hyp) are locked to a file (not url ones)
         let file = filename.match(/\/file:\/(.*)/);
-        file = file ? `?file=${file[1]}` : '';
+        let href = file ? '?' + Object.entries({ file: file[1], enc: encodeURIComponent(hypenc) })
+            .filter(([k, v]) => !!v)
+            .map(([k, v]) => k+'='+v)
+            .join('&') : '';
 
-        let html = htmllify(file, lines, lineNumber);
+        let html = htmllify(href, lines, lineNumber);
 
         if (concat !== undefined) {
             // prepend search results (using e.g. `file:* searchtext`) with HYP file link
-            html = html ? `\n\n<a href="${file}&index=0">--- HYP --- ${filename}</a>\n${html}` : '';
+            html = html ? `\n\n<a href="${href}#index=0">--- HYP --- ${filename}</a>\n${html}` : '';
             html = concat + html;
         }
 
