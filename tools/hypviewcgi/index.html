@@ -1,8 +1,10 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="favicon.ico" />
   <title>
-    HYPView (an emscripten showcase) v0.1
+    HYPView, ST-Guide Hypertext Viewer
   </title>
   <style type="text/css">
     .body { margin-top:0px; margin-left:2ex; }
@@ -35,12 +37,47 @@
          */
     }
   </style>
+  <script type="text/javascript">
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js', { scope: '/hypview/' }).then(function(reg) {
+
+        if(reg.installing) {
+          console.log('Service worker installing');
+        } else if(reg.waiting) {
+          console.log('Service worker installed');
+        } else if(reg.active) {
+          console.log('Service worker active');
+        }
+
+      }).catch(function(error) {
+        // registration failed
+        console.log('Registration failed with ' + error);
+      });
+    }
+  </script>
 
   <script type="text/javascript" src="dehyp.js"></script>
   <script type="text/javascript" src="hypview.js"></script>
 
   <script type="text/javascript">
+    var launchHyp;
     var hypfile = 'tos.hyp';
+
+    if ('launchQueue' in window) {
+        launchQueue.setConsumer(launchParams => {
+            if (!launchParams.files.length)
+                return;
+
+            const file = launchParams.files[0];
+            const filename = file.name;
+
+            file.getFile()
+                .then(r => r.arrayBuffer())
+                .then(buffer => {
+                    launchHyp = { filename, data: new Uint8Array(buffer) };
+                });
+        });
+    }
 
     var stdout = [''];
     Module.preRun = function() {
@@ -70,6 +107,22 @@
         FS.syncfs(true, function(err) {
             assert(!err);
             Module.syncdone = 1;
+
+            if (launchHyp) {
+                location.search = `?file=${launchHyp.filename}`;
+                try {
+                    FS.createDataFile('/file:', launchHyp.filename, launchHyp.data, true, false);
+                } catch(e) {
+                    // file already present
+                }
+                FS.syncfs(false, function(err) {
+                    assert(!err);
+                    Module.syncdone = 1;
+
+                    cb();
+                })
+                return;
+            }
 
             cb();
         });
