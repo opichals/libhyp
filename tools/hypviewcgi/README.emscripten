@@ -1,0 +1,12 @@
+
+## Build
+
+```
+brew install emscripten
+```
+
+```
+emmake make CPPFLAGS=-I/opt/homebrew/include
+cd tools/hypviewcgi
+emmake make CPPFLAGS=-I/opt/homebrew/include dehyp.html
+```

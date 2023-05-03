@@ -31,7 +31,7 @@ grephyp: $(GREPHYP_OBJS) $(libhyp_dir)/libhyp.a
 
 # emscripten
 dehyp.html: $(DEHYP_OBJS) $(libhyp_dir)/libhyp.a
-	$(CC) -o $@ $(DEHYP_OBJS) -L$(libhyp_dir) -lhyp -L$(libpng_dir) -s USE_ZLIB=1 -s USE_LIBPNG=1 $(CROSS_LDFLAGS)
+	$(CC) -o $@ $(DEHYP_OBJS) -L$(libhyp_dir) -lhyp -lidbfs.js -s EXPORTED_RUNTIME_METHODS='["callMain","FS", "ENV"]' -L$(libpng_dir) -s USE_ZLIB=1 -s USE_LIBPNG=1 $(CROSS_LDFLAGS)
 
 grephyp.html: $(GREPHYP_OBJS) $(libhyp_dir)/libhyp.a
 	$(CC) -o $@ $(GREPHYP_OBJS) -L$(libhyp_dir) -lhyp $(CROSS_LDFLAGS)
