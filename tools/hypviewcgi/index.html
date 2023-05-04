@@ -59,6 +59,8 @@
 
   <script type="text/javascript" src="dehyp.js"></script>
   <script type="text/javascript" src="hypview.js"></script>
+  <script type="text/javascript" src="lha.js"></script>
+  <script type="text/javascript" src="uzip.js"></script>
 
   <script type="text/javascript">
     var launchHyp;
@@ -111,22 +113,6 @@
             assert(!err);
             Module.syncdone = 1;
 
-            if (launchHyp) {
-                location.search = `?file=${launchHyp.filename}`;
-                try {
-                    FS.createDataFile('/file:', launchHyp.filename, launchHyp.data, true, false);
-                } catch(e) {
-                    // file already present
-                }
-                FS.syncfs(false, function(err) {
-                    assert(!err);
-                    Module.syncdone = 1;
-
-                    cb();
-                })
-                return;
-            }
-
             cb();
         });
     }
@@ -141,21 +127,21 @@
         if (args.enc) {
             hypenc = args.enc;
         }
-        if (args.file) {
-            hypfile = `/file:/${args.file}`;
-            return open();
-        }
         if (args.url) {
             return fetch('https://corsproxy.io/?'+encodeURIComponent(args.url))
                 .then(r => r.arrayBuffer())
                 .then(buffer => {
                     let filename = args.url.split('/').pop();
                     console.log(args.url, 'fetched as', filename);
-                    FS.createDataFile('/', filename, new Uint8Array(buffer), true, false);
-                    hypfile = filename;
-
-                    open();
+                    open_from_buffer('/', filename, new Uint8Array(buffer))
                 });
+        }
+        if (args.file) {
+            hypfile = `/file:/${args.file}`;
+            return open();
+        }
+        if (launchHyp) {
+            return open_from_buffer('/file:', launchHyp.filename, launchHyp.data);
         }
     }
 
@@ -238,36 +224,72 @@
       }
     }
 
+    function open_from_buffer(root, filename, data) {
+        filename = filename.replace(/\//g, ':'); // handle nested folders
+
+        if (filename.toLowerCase().endsWith('.zip')) {
+            const entries = Object.entries(UZIP.parse(data));
+            for (var i = 0; i < entries.length; i++) {
+                var [name, data] = entries[i];
+                name = name.toLowerCase();
+                if (name.endsWith('.hyp')) {
+                    open_from_buffer(root, name, new Uint8Array(data));
+                }
+            }
+            return;
+        } else if (filename.toLowerCase().endsWith('.lzh') || filename.toLowerCase().endsWith('.lha')) {
+            const entries = LHA.read(new Uint8Array(data));
+            for (var i = 0; i < entries.length; i++) {
+                var entry = entries[i];
+                var name = entry.name.toLowerCase();
+                if (name.endsWith('.hyp')) {
+                    open_from_buffer(root, name, LHA.unpack(entry));
+                }
+            }
+            return;
+        }
+
+        try {
+            FS.createDataFile(root, filename, data, true, false);
+        } catch(e) {
+            // file already present
+        }
+        FS.syncfs(false, function(err) {
+            assert(!err);
+            Module.syncdone = 1;
+
+            if ('URLSearchParams' in window) {
+                var searchParams = new URLSearchParams(window.location.search)
+                searchParams.set("file", filename.replace('/', ""));
+                if (root != '/') {
+                    searchParams.delete("url");
+                }
+                var href = window.location.pathname + '?' + searchParams.toString();
+                history.pushState(null, '', href);
+            }
+
+            hypfile = `${root}${root != '/' ? '/': ''}${filename}`;
+            open();
+        });
+    }
+
     // FileReader (allows local file access)
     function handle_file(file) {
         var reader = new FileReader();
-        ret = [];
-        reader.onload = function(e) {
-            var hyppathname = `/file:/${file.name}`;
-            try {
-                FS.createDataFile('/file:', file.name, e.target.result, true, false);
-            } catch(e) {
-                // file already present
-            }
-            FS.syncfs(false, function(err) {
-                assert(!err);
-                Module.syncdone = 1;
-
-                if ('URLSearchParams' in window) {
-                    var searchParams = new URLSearchParams(window.location.search)
-                    searchParams.set("file", file.name);
-                    var href = window.location.pathname + '?' + searchParams.toString();
-                    history.pushState(null, '', href);
-                }
-
-                hypview(hyppathname, 0, 0);
-            });
-
-        };
         reader.onerror = function(stuff) {
             console.log("error", stuff, stuff.toString(), stuff.getMessage && stuff.getMessage());
         };
-        reader.readAsBinaryString(file); //readAsdataURL
+        if (file.name.toLowerCase().endsWith('.zip') || file.name.toLowerCase().endsWith('.lzh') || file.name.toLowerCase().endsWith('.lha')) {
+            reader.onload = function(e) {
+                open_from_buffer('/file:', file.name, e.target.result);
+            };
+            reader.readAsArrayBuffer(file);
+        } else {
+            reader.onload = function(e) {
+                open_from_buffer(`/file:`, file.name, e.target.result);
+            };
+            reader.readAsBinaryString(file);
+        }
     }
 
     function handle_files(files) {
