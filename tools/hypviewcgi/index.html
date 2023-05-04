@@ -294,17 +294,10 @@
         reader.onerror = function(stuff) {
             console.log("error", stuff, stuff.toString(), stuff.getMessage && stuff.getMessage());
         };
-        if (file.name.toLowerCase().endsWith('.zip') || file.name.toLowerCase().endsWith('.lzh') || file.name.toLowerCase().endsWith('.lha')) {
-            reader.onload = function(e) {
-                open_from_buffer('/file:', file.name, e.target.result);
-            };
-            reader.readAsArrayBuffer(file);
-        } else {
-            reader.onload = function(e) {
-                open_from_buffer(`/file:`, file.name, e.target.result);
-            };
-            reader.readAsBinaryString(file);
-        }
+        reader.onload = function(e) {
+            open_from_buffer(`/file:`, file.name, new Uint8Array(e.target.result));
+        };
+        reader.readAsArrayBuffer(file);
     }
 
     function handle_files(files) {
