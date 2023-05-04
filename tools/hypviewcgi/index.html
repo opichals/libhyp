@@ -133,7 +133,7 @@
                 .then(buffer => {
                     let filename = args.url.split('/').pop();
                     console.log(args.url, 'fetched as', filename);
-                    open_from_buffer('/', filename, new Uint8Array(buffer))
+                    open_from_buffer('/', filename, new Uint8Array(buffer), args.file)
                 });
         }
         if (args.file) {
@@ -224,31 +224,7 @@
       }
     }
 
-    function open_from_buffer(root, filename, data) {
-        filename = filename.replace(/\//g, ':'); // handle nested folders
-
-        if (filename.toLowerCase().endsWith('.zip')) {
-            const entries = Object.entries(UZIP.parse(data));
-            for (var i = 0; i < entries.length; i++) {
-                var [name, data] = entries[i];
-                name = name.toLowerCase();
-                if (name.endsWith('.hyp')) {
-                    open_from_buffer(root, name, new Uint8Array(data));
-                }
-            }
-            return;
-        } else if (filename.toLowerCase().endsWith('.lzh') || filename.toLowerCase().endsWith('.lha')) {
-            const entries = LHA.read(new Uint8Array(data));
-            for (var i = 0; i < entries.length; i++) {
-                var entry = entries[i];
-                var name = entry.name.toLowerCase();
-                if (name.endsWith('.hyp')) {
-                    open_from_buffer(root, name, LHA.unpack(entry));
-                }
-            }
-            return;
-        }
-
+    function save_file_data(root, filename, data, cb) {
         try {
             FS.createDataFile(root, filename, data, true, false);
         } catch(e) {
@@ -258,17 +234,56 @@
             assert(!err);
             Module.syncdone = 1;
 
+            cb && cb(`${root}${root != '/' ? '/': ''}${filename}`);
+        });
+    }
+
+    function open_from_buffer(root, filename, data, filemask) {
+        filename = filename.replace(/\//g, ':'); // handle nested folders
+
+        if (filename.toLowerCase().endsWith('.zip')) {
+            const archives = Object.entries(UZIP.parse(data)).reduce((archives, [name, data]) => {
+                name = name.toLowerCase().replace(/\//g, ':');
+                if (name.endsWith('.hyp')) {
+                    archives.push({ name, data });
+                    save_file_data(root, name, new Uint8Array(data));
+                }
+                return archives
+            }, []);
+
+            const archive = archives.find(entry => entry.name.includes(filemask)) || archives[0];
+            open_from_buffer(root, archive.name, new Uint8Array(archive.data));
+            return;
+        } else if (filename.toLowerCase().endsWith('.lzh') || filename.toLowerCase().endsWith('.lha')) {
+            const archives = LHA.read(new Uint8Array(data)).reduce((archives, entry) => {
+                entry.name = entry.name.toLowerCase().replace(/\//g, ':');
+                if (entry.name.endsWith('.hyp')) {
+                    archives.push(entry);
+                    save_file_data(root, entry.name, LHA.unpack(entry));
+                }
+                return archives;
+            }, []);
+
+            const archive = archives.find(entry => entry.name.includes(filemask)) || archives[0];
+            open_from_buffer(root, archive.name, LHA.unpack(archive));
+            return;
+        }
+
+        save_file_data(root, filename, data, (fspathname) => {
             if ('URLSearchParams' in window) {
                 var searchParams = new URLSearchParams(window.location.search)
                 searchParams.set("file", filename.replace('/', ""));
                 if (root != '/') {
                     searchParams.delete("url");
                 }
-                var href = window.location.pathname + '?' + searchParams.toString();
-                history.pushState(null, '', href);
+                const search = '?' + searchParams.toString();
+                if (search != window.location.search) {
+                    var href = window.location.pathname + search + window.location.hash;
+                    history.pushState(null, '', href);
+                }
             }
 
-            hypfile = `${root}${root != '/' ? '/': ''}${filename}`;
+            hypfile = fspathname;
             open();
         });
     }
@@ -333,7 +348,7 @@
     window.onresize = resize;
 
     // link navigation
-    window.onhashchange = open;
+    window.onpopstate = open;
   </script>
 </head>
 <body>
