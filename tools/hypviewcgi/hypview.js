@@ -48,7 +48,7 @@ let limg_args;
 let $begidx;
 
 function insertImages(lines) {
-  let z = 1;
+  let z = -limg_args.length;
   let $images = '';
 
   // fixup the @(l)image ypositions positions
@@ -117,7 +117,7 @@ function constructGraphics(graphics) {
         $offset += Math.round((gr.height + 15) / 16);
       }
 
-      limg_args.push(gr);
+      limg_args.unshift(gr);
     } else if (gr.cmd === 'box') {
       gr.pattern = parseInt(gr.pattern, 10);
 
