@@ -295,6 +295,7 @@
             console.log("error", stuff, stuff.toString(), stuff.getMessage && stuff.getMessage());
         };
         reader.onload = function(e) {
+            location.hash = ""; // avoid staying on a node from a different file
             open_from_buffer(`/file:`, file.name, new Uint8Array(e.target.result));
         };
         reader.readAsArrayBuffer(file);
@@ -341,7 +342,7 @@
     window.onresize = resize;
 
     // link navigation
-    window.onpopstate = open;
+    window.onpopstate = fetchUrl;
   </script>
 </head>
 <body>
