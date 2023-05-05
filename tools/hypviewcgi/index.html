@@ -137,7 +137,7 @@
                 });
         }
         if (args.file) {
-            hypfile = `/file:/${args.file}`;
+            hypfile = `/file:/${args.file.replace(/\//g, ':')}`;
             return open();
         }
         if (launchHyp) {
@@ -188,7 +188,10 @@
 
         // links of only file loaded hyps (?file=xyz.hyp) are locked to a file (not url ones)
         let file = filename.match(/\/file:\/(.*)/);
-        let href = file ? '?' + Object.entries({ file: file[1], enc: hypenc != identityenc && encodeURIComponent(hypenc) })
+        let href = file ? '?' + Object.entries({
+                file: file[1].replace(/:/g, '/'),
+                enc: hypenc != identityenc && encodeURIComponent(hypenc)
+            })
             .filter(([k, v]) => !!v)
             .map(([k, v]) => k+'='+v)
             .join('&') : '';
@@ -225,6 +228,7 @@
     }
 
     function save_file_data(root, filename, data, cb) {
+        filename = filename.replace(/\//g, ':');
         try {
             FS.createDataFile(root, filename, data, true, false);
         } catch(e) {
@@ -239,11 +243,9 @@
     }
 
     function open_from_buffer(root, filename, data, filemask) {
-        filename = filename.replace(/\//g, ':'); // handle nested folders
-
         if (filename.toLowerCase().endsWith('.zip')) {
             const archives = Object.entries(UZIP.parse(data)).reduce((archives, [name, data]) => {
-                name = name.toLowerCase().replace(/\//g, ':');
+                name = name.toLowerCase();
                 if (name.endsWith('.hyp')) {
                     archives.push({ name, data });
                     save_file_data(root, name, new Uint8Array(data));
@@ -256,7 +258,7 @@
             return;
         } else if (filename.toLowerCase().endsWith('.lzh') || filename.toLowerCase().endsWith('.lha')) {
             const archives = LHA.read(new Uint8Array(data)).reduce((archives, entry) => {
-                entry.name = entry.name.toLowerCase().replace(/\//g, ':');
+                entry.name = entry.name.toLowerCase();
                 if (entry.name.endsWith('.hyp')) {
                     archives.push(entry);
                     save_file_data(root, entry.name, LHA.unpack(entry));
@@ -272,12 +274,16 @@
         save_file_data(root, filename, data, (fspathname) => {
             if ('URLSearchParams' in window) {
                 var searchParams = new URLSearchParams(window.location.search)
-                searchParams.set("file", filename.replace('/', ""));
+                searchParams.set("file", filename);
                 if (root != '/') {
                     searchParams.delete("url");
                 }
-                const search = '?' + searchParams.toString();
-                if (search != window.location.search) {
+                // instead of searchParams.toString() to keep the paths non-urlencoded
+                const search = '?' + [...searchParams.entries()]
+                    .filter(([k, v]) => !!v)
+                    .map(([k, v]) => k+'='+v)
+                    .join('&');
+                if (search != decodeURIComponent(window.location.search)) {
                     var href = window.location.pathname + search + window.location.hash;
                     history.pushState(null, '', href);
                 }
